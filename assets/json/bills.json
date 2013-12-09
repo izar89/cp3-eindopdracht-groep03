@@ -1,0 +1,21 @@
+{
+    "bills": [
+        {
+            "id":"1",
+            "billType":"",
+            "name":"Bill 1",
+            "created":"",
+            "updated":"",
+            "total":"",
+            "paid":"false"
+
+        },{
+            "id":"2",
+            "billType":"",
+            "name":"Bill 2",
+            "created":"",
+            "updated":"",
+            "total":"",
+            "paid":"false"
+        }]
+}

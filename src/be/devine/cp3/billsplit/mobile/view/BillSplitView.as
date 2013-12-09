@@ -5,7 +5,8 @@
  */
 package be.devine.cp3.billsplit.mobile.view {
 
-import be.devine.cp3.billsplit.model.AppModel;
+import be.devine.cp3.billsplit.model.PersonsModel;
+
 import feathers.controls.Button;
 import feathers.controls.PanelScreen;
 import feathers.events.FeathersEventType;
@@ -14,7 +15,7 @@ import starling.events.Event;
 
 public class BillSplitView extends PanelScreen{
 
-    private var appModel:AppModel;
+    private var personsModel:PersonsModel;
     private var backButton:Button;
 
     public function BillSplitView() {
@@ -22,7 +23,9 @@ public class BillSplitView extends PanelScreen{
     }
 
     private function initializeHandler(e:Event):void {
-        appModel = AppModel.getInstance();
+
+        personsModel = PersonsModel.getInstance();
+        personsModel.loadPersons();
 
         headerProperties.title = 'Billsplitview';
 
