@@ -1,4 +1,4 @@
-{"persons": [
+[
     {
         "id":"0",
         "billId":"0",
@@ -12,4 +12,4 @@
         "amount":"30",
         "paid":"false"
     }
-]}
+]

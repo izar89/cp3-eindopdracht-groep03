@@ -5,19 +5,14 @@
  */
 package be.devine.cp3.billsplit.model {
 
+import be.devine.cp3.billsplit.model.service.PersonsService;
 import be.devine.cp3.billsplit.vo.PersonVO;
 import flash.events.Event;
 import flash.events.EventDispatcher;
-import flash.filesystem.File;
-import flash.filesystem.FileMode;
-import flash.filesystem.FileStream;
 
 public class PersonsModel extends EventDispatcher{
 
     private static var instance:PersonsModel;
-
-    private var file:File;
-    private var fileStream:FileStream;
 
     private var _persons:Vector.<PersonVO>;
     private var personsChanged:Boolean;
@@ -28,8 +23,6 @@ public class PersonsModel extends EventDispatcher{
         if (e == null) {
             throw new Error("PersonsModel is a singleton, use getInstance() instead");
         }
-        file = File.applicationStorageDirectory.resolvePath('persons.json');
-        fileStream = new FileStream();
     }
 
     public static function getInstance():PersonsModel {
@@ -52,6 +45,12 @@ public class PersonsModel extends EventDispatcher{
         dispatchEvent(new Event(PERSONS_CHANGED_EVENT));
     }
 
+    /* Events */
+    private function loadCompleteHandler(e:Event):void {
+        var personsService:PersonsService = e.currentTarget as PersonsService;
+        persons = personsService.persons;
+    }
+
     /* Functions */
     private function commitProperties():void{
         if(personsChanged){
@@ -59,36 +58,16 @@ public class PersonsModel extends EventDispatcher{
         }
     }
 
-    private function createPersonVo(id:uint, billId:uint, name:String, amount:Number, paid:Boolean):PersonVO{
-        var personVO:PersonVO = new PersonVO();
-        personVO.id = id;
-        personVO.billId = billId;
-        personVO.name = name;
-        personVO.amount = amount;
-        personVO.paid = paid;
-        return personVO;
-    }
-
     public function loadPersons():void{
-        fileStream.open(file, FileMode.READ);
-        var fileContents:String = fileStream.readMultiByte(fileStream.bytesAvailable, 'utf-8');
-        fileStream.close();
-
-        var jsonObject:Object = JSON.parse(fileContents);
-        var persons:Object = jsonObject.persons;
-        var personsVector:Vector.<PersonVO> = new Vector.<PersonVO>();
-
-        for each(var person:Object in persons){
-            personsVector.push(createPersonVo(person.id, person.billId, person.name, person.amount, person.paid));
-        }
-
-        persons = personsVector;
+        var personsService:PersonsService = new PersonsService();
+        personsService.addEventListener(Event.COMPLETE, loadCompleteHandler);
+        personsService.load();
     }
 
-    private function writePersons(persons:Vector.<PersonVO>):void{
-        fileStream.open(file, FileMode.WRITE);
-        fileStream.writeUTFBytes(JSON.stringify(persons));
-        fileStream.close();
+    private function writePersons():void{
+        var personsService:PersonsService = new PersonsService();
+        personsService.persons = persons;
+        personsService.write();
     }
 }
 }
