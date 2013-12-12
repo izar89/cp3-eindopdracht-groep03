@@ -3,13 +3,11 @@
         "id":"0",
         "billId":"0",
         "name":"person1",
-        "amount":"20",
-        "paid":"false"
+        "amount":"20"
     },{
         "id":"1",
         "billId":"0",
         "name":"person2",
-        "amount":"30",
-        "paid":"false"
+        "amount":"30"
     }
 ]

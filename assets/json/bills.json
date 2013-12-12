@@ -4,16 +4,14 @@
             "name":"Bill 1",
             "created":"",
             "updated":"",
-            "total":"",
-            "paid":"false"
+            "total":""
 
         },{
             "id":"2",
             "name":"Bill 2",
             "created":"",
             "updated":"",
-            "total":"",
-            "paid":"false"
+            "total":""
         }
 ]
 

@@ -6,12 +6,11 @@ import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.events.Event;
 import flash.geom.Rectangle;
-
 import starling.core.Starling;
 
 public class Main extends Sprite {
 
-    private var starling:Starling
+    private var starling:Starling;
 
     public function Main() {
 
@@ -25,8 +24,7 @@ public class Main extends Sprite {
     }
 
     private function stageResizeHandler(e:Event):void {
-        var rect:Rectangle = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
-        starling.viewPort = rect;
+        starling.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         starling.stage.stageWidth = stage.stageWidth;
         starling.stage.stageHeight = stage.stageHeight;
     }

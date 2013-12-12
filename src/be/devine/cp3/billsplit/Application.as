@@ -5,6 +5,7 @@
  */
 package be.devine.cp3.billsplit {
 
+import be.devine.cp3.billsplit.mobile.view.AddBillView;
 import be.devine.cp3.billsplit.mobile.view.BillSplitView;
 import be.devine.cp3.billsplit.mobile.view.BillsView;
 
@@ -17,16 +18,25 @@ import starling.events.Event;
 
 public class Application extends ScreenNavigator{
 
-    private static const BILLSVIEW:String = 'billsView';
-    private static const BILLSPLITVIEW:String = 'billsplitView';
+    private static const BILLSVIEW:String = "billsView";
+    private static const ADDBILLVIEW:String = "addBillView";
+    private static const BILLSPLITVIEW:String = "billSplitView";
 
     private var transitionManager:ScreenSlidingStackTransitionManager;
 
     public function Application(){
         new MinimalMobileTheme();
 
-        addScreen(BILLSVIEW, new ScreenNavigatorItem(BillsView, {'billsplitView': billsViewBillsplitHandler}));
-        addScreen(BILLSPLITVIEW, new ScreenNavigatorItem(BillSplitView, {complete: BILLSVIEW}));
+        addScreen(BILLSVIEW, new ScreenNavigatorItem(BillsView, {
+            billSplitView: billSplitViewHandler,
+            addBillView: ADDBILLVIEW
+        }));
+        addScreen(ADDBILLVIEW, new ScreenNavigatorItem(AddBillView, {
+            complete: BILLSVIEW
+        }));
+        addScreen(BILLSPLITVIEW, new ScreenNavigatorItem(BillSplitView, {
+            complete: BILLSVIEW
+        }));
 
         showScreen(BILLSVIEW);
 
@@ -34,8 +44,9 @@ public class Application extends ScreenNavigator{
         transitionManager.duration = 0.4;
     }
 
-    private function billsViewBillsplitHandler(event:Event):void{
+    private function billSplitViewHandler(event:Event):void{
         this.showScreen(BILLSPLITVIEW);
     }
+
 }
 }

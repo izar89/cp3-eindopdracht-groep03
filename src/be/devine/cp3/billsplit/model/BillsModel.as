@@ -49,7 +49,6 @@ public class BillsModel extends EventDispatcher{
     private function loadCompleteHandler(e:Event):void {
         var billService:BillsService = e.currentTarget as BillsService;
         bills = billService.bills;
-        trace(bills);
     }
 
     /* Functions */
@@ -65,7 +64,7 @@ public class BillsModel extends EventDispatcher{
         billService.load();
     }
 
-    private function writeBills():void{
+    public function writeBills():void{
         var billService:BillsService = new BillsService();
         billService.bills = bills;
         billService.write();

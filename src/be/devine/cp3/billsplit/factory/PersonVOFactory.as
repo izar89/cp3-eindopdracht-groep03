@@ -13,7 +13,6 @@ public class PersonVOFactory {
         personVO.billId = person.billId;
         personVO.name = person.name;
         personVO.amount = person.amount;
-        personVO.paid = person.paid;
         return personVO;
     }
 }

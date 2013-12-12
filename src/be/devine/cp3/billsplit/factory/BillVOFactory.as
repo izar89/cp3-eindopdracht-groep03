@@ -14,7 +14,6 @@ public class BillVOFactory {
         billVO.created = bill.created as Date;
         billVO.updated = bill.updated as Date;
         billVO.total = bill.total;
-        billVO.paid = bill.paid;
         return billVO;
     }
 }

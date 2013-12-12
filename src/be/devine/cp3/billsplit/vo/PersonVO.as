@@ -10,6 +10,5 @@ public class PersonVO {
     public var billId:uint;
     public var name:String;
     public var amount:Number;
-    public var paid:Boolean;
 }
 }
