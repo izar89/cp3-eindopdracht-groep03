@@ -5,7 +5,7 @@
  */
 package be.devine.cp3.billsplit {
 
-import be.devine.cp3.billsplit.mobile.view.AddBillView;
+import be.devine.cp3.billsplit.mobile.view.BillView;
 import be.devine.cp3.billsplit.mobile.view.BillSplitView;
 import be.devine.cp3.billsplit.mobile.view.BillsView;
 
@@ -31,7 +31,7 @@ public class Application extends ScreenNavigator{
             billSplitView: billSplitViewHandler,
             addBillView: ADDBILLVIEW
         }));
-        addScreen(ADDBILLVIEW, new ScreenNavigatorItem(AddBillView, {
+        addScreen(ADDBILLVIEW, new ScreenNavigatorItem(BillView, {
             complete: BILLSVIEW
         }));
         addScreen(BILLSPLITVIEW, new ScreenNavigatorItem(BillSplitView, {

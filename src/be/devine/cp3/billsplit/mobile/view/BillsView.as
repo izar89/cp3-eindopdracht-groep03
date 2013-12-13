@@ -6,14 +6,16 @@
 package be.devine.cp3.billsplit.mobile.view {
 
 import be.devine.cp3.billsplit.model.BillsModel;
-import be.devine.cp3.billsplit.model.PersonsModel;
 import be.devine.cp3.billsplit.vo.BillVO;
 
 import feathers.controls.Button;
 import feathers.controls.List;
 import feathers.controls.PanelScreen;
 import feathers.controls.ScrollContainer;
+import feathers.controls.renderers.IListItemRenderer;
 import feathers.data.ListCollection;
+import feathers.themes.controls.SwipeListItemRenderer;
+
 import starling.events.Event;
 
 public class BillsView extends PanelScreen{
@@ -36,7 +38,12 @@ public class BillsView extends PanelScreen{
 
         // List
         billsList = new List();
+        billsList.itemRendererFactory = function():IListItemRenderer{
+            var renderer:SwipeListItemRenderer = new SwipeListItemRenderer();
+            return renderer;
+        }
         billsList.addEventListener(Event.CHANGE, billsListChangeHandler);
+        billsList.addEventListener('test', testHandler);
         addChild(billsList);
 
         billsModel.loadBills();
@@ -85,8 +92,12 @@ public class BillsView extends PanelScreen{
 
     private function resize():void{
         billsList.setSize(stage.stageWidth, stage.stageHeight);
+
     }
 
 
+    private function testHandler(e:Event):void {
+        trace('edit');
+    }
 }
 }

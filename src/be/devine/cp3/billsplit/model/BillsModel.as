@@ -12,11 +12,15 @@ import flash.events.EventDispatcher;
 
 public class BillsModel extends EventDispatcher{
 
+    public static const BILLS_CHANGED_EVENT:String = "billsChanged";
+    public static const CURRENTBILL_CHANGED_EVENT:String = "currentBillChanged";
+
     private static var instance:BillsModel;
 
     private var _bills:Vector.<BillVO>;
     private var billsChanged:Boolean;
-    public static const BILLS_CHANGED_EVENT:String = "billsChanged";
+    private var _currentBill:BillVO;
+    private var currentBillChanged:Boolean;
 
     /* Constructor */
     public function BillsModel(e:Enforcer) {
@@ -45,6 +49,19 @@ public class BillsModel extends EventDispatcher{
         dispatchEvent(new Event(BILLS_CHANGED_EVENT));
     }
 
+    [Bindable(event="currentBillChanged")]
+    public function get currentBill():BillVO {
+        return _currentBill;
+    }
+
+    public function set currentBill(value:BillVO):void {
+        if (_currentBill == value) return;
+        currentBillChanged = true;
+        _currentBill = value;
+        commitProperties();
+        dispatchEvent(new Event(CURRENTBILL_CHANGED_EVENT));
+    }
+
     /* Events */
     private function loadCompleteHandler(e:Event):void {
         var billService:BillsService = e.currentTarget as BillsService;
@@ -55,6 +72,9 @@ public class BillsModel extends EventDispatcher{
     private function commitProperties():void{
         if(billsChanged){
             billsChanged = false;
+        }
+        if(currentBillChanged){
+            currentBillChanged = false;
         }
     }
 

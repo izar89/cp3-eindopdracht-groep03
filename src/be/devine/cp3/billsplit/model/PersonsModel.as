@@ -15,7 +15,6 @@ public class PersonsModel extends EventDispatcher{
 
     private static var instance:PersonsModel;
 
-    private var _currentBill:BillVO;
     private var _persons:Vector.<PersonVO>;
     private var personsChanged:Boolean;
     public static const PERSONS_CHANGED_EVENT:String = "personsChanged";
@@ -45,10 +44,6 @@ public class PersonsModel extends EventDispatcher{
         _persons = value;
         commitProperties();
         dispatchEvent(new Event(PERSONS_CHANGED_EVENT));
-    }
-
-    public function set currentBill(value:BillVO):void {
-        _currentBill = value;
     }
 
     /* Events */

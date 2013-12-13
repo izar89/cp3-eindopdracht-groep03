@@ -14,14 +14,14 @@ import feathers.controls.TextInput;
 import starling.display.DisplayObject;
 import starling.events.Event;
 
-public class AddBillView extends PanelScreen{
+public class BillView extends PanelScreen{
 
     private var billsModel:BillsModel;
     private var backBtn:Button;
     private var txtName:TextInput;
+    private var txtTotal:TextInput;
     private var addBtn:Button;
-
-    public function AddBillView() {
+    public function BillView() {
         billsModel = BillsModel.getInstance();
 
         headerProperties.title = 'Add Bill';
@@ -32,11 +32,16 @@ public class AddBillView extends PanelScreen{
         headerProperties.leftItems = new <DisplayObject>[backBtn];
         backButtonHandler = backBtnTriggeredHandler;
 
-        // Textfield
+        // Textfields
         txtName = new TextInput();
         txtName.maxChars = 16;
         //input.restrict = "0-9";
         addChild(txtName);
+
+        txtTotal = new TextInput();
+        txtTotal.maxChars = 16;
+        txtTotal.restrict = "0-9";
+        addChild(txtTotal);
 
         // Button
         addBtn = new Button();
@@ -67,11 +72,12 @@ public class AddBillView extends PanelScreen{
     private function addBtnTriggeredHandler(e:Event):void {
         if(txtName.text.length > 0){
             var newBill:BillVO = new BillVO();
-            newBill.id = 20; //TODO
+            var date:Date = new Date();
+            newBill.id = date.toString();
             newBill.name = txtName.text;
-            newBill.created = new Date();
-            newBill.updated = new Date();
-            newBill.total = 0; //TODO
+            newBill.created = date;
+            newBill.updated = date;
+            newBill.total = parseFloat(txtTotal.text);
             billsModel.addBill(newBill);
             billsModel.writeBills();
             dispatchEventWith(Event.COMPLETE);
@@ -81,8 +87,10 @@ public class AddBillView extends PanelScreen{
     /* Functions */
     private function resize():void{
         txtName.setSize(stage.stageWidth, txtName.minHeight);
+        txtTotal.y = txtName.height + 5;
+        txtTotal.setSize(stage.stageWidth, txtTotal.minHeight);
         addBtn.setSize(stage.stageWidth, addBtn.minHeight);
-        addBtn.y = txtName.height;
+        addBtn.y = txtTotal.height + txtName.height + 10;
     }
 }
 }

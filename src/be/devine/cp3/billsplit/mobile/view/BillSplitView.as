@@ -50,6 +50,7 @@ public class BillSplitView extends PanelScreen{
     /* Functions */
     private function resize():void{
         //TODO
+
     }
 }
 }
