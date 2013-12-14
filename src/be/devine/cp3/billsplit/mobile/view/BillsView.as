@@ -1,8 +1,3 @@
-/**
- * User: Stijn Heylen
- * Date: 04/12/13
- * Time: 14:26
- */
 package be.devine.cp3.billsplit.mobile.view {
 
 import be.devine.cp3.billsplit.model.BillsModel;
@@ -20,7 +15,6 @@ import starling.events.Event;
 
 public class BillsView extends PanelScreen{
 
-    public static const BILLSPLITVIEW:String = "billSplitView";
     public static const ADDBILLVIEW:String = "addBillView";
 
     private var billsModel:BillsModel;
@@ -31,7 +25,7 @@ public class BillsView extends PanelScreen{
         billsModel = BillsModel.getInstance();
 
         /* Header */
-        headerProperties.title = 'BILLS';
+        headerProperties.title = 'Bills';
 
         /* Footer */
         footerFactory = customFooterFactory;
@@ -41,15 +35,17 @@ public class BillsView extends PanelScreen{
         billsList.itemRendererFactory = function():IListItemRenderer{
             var renderer:SwipeListItemRenderer = new SwipeListItemRenderer();
             return renderer;
-        }
+        };
         billsList.addEventListener(Event.CHANGE, billsListChangeHandler);
-        billsList.addEventListener('test', testHandler);
+        billsList.addEventListener('edit', editBillHandler);
+        billsList.addEventListener('delete', deleteBillHandler);
         addChild(billsList);
 
         billsModel.loadBills();
         addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 
         display();
+
     }
 
     /* Starling events */
@@ -64,11 +60,12 @@ public class BillsView extends PanelScreen{
     }
 
     private function addBillBtnTriggeredHandler(e:Event):void {
+        // TODO: CHANGE BACK TO ADDBILLVIEW
         dispatchEventWith(ADDBILLVIEW, false);
     }
 
     private function billsListChangeHandler(e:Event):void {
-        trace(billsList.selectedItem as BillVO); //TODO
+       trace(billsList.selectedItem as BillVO); //TODO
     }
 
     /* Functions */
@@ -96,8 +93,18 @@ public class BillsView extends PanelScreen{
     }
 
 
-    private function testHandler(e:Event):void {
+    private function editBillHandler(e:Event):void {
         trace('edit');
+        // billsModel.updateBill();
+
+    }
+
+    private function deleteBillHandler(e:Event):void {
+        trace('delete');
+
+        // billsModel.deleteBill(billItem);
+        //removeChild(e.currentTarget);
+
     }
 }
 }

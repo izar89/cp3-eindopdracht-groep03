@@ -1,13 +1,9 @@
-/**
- * User: Stijn Heylen
- * Date: 28/11/13
- * Time: 14:07
- */
 package be.devine.cp3.billsplit {
 
 import be.devine.cp3.billsplit.mobile.view.BillView;
 import be.devine.cp3.billsplit.mobile.view.BillSplitView;
 import be.devine.cp3.billsplit.mobile.view.BillsView;
+import be.devine.cp3.billsplit.mobile.view.PersonView;
 
 import feathers.controls.ScreenNavigator;
 import feathers.controls.ScreenNavigatorItem;
@@ -21,6 +17,7 @@ public class Application extends ScreenNavigator{
     private static const BILLSVIEW:String = "billsView";
     private static const ADDBILLVIEW:String = "addBillView";
     private static const BILLSPLITVIEW:String = "billSplitView";
+    private static const ADDPERSONVIEW:String = "addPersonView";
 
     private var transitionManager:ScreenSlidingStackTransitionManager;
 
@@ -32,10 +29,15 @@ public class Application extends ScreenNavigator{
             addBillView: ADDBILLVIEW
         }));
         addScreen(ADDBILLVIEW, new ScreenNavigatorItem(BillView, {
-            complete: BILLSVIEW
+            complete: BILLSPLITVIEW,
+            billsView: billsViewHandler
         }));
         addScreen(BILLSPLITVIEW, new ScreenNavigatorItem(BillSplitView, {
-            complete: BILLSVIEW
+            complete: BILLSVIEW,
+            addPersonView: addPersonsViewHandler
+        }));
+        addScreen(ADDPERSONVIEW, new ScreenNavigatorItem(PersonView, {
+            complete: BILLSPLITVIEW
         }));
 
         showScreen(BILLSVIEW);
@@ -46,6 +48,14 @@ public class Application extends ScreenNavigator{
 
     private function billSplitViewHandler(event:Event):void{
         this.showScreen(BILLSPLITVIEW);
+    }
+
+    private function billsViewHandler(event:Event):void{
+        this.showScreen(BILLSVIEW);
+    }
+
+    private function addPersonsViewHandler(event:Event):void{
+        this.showScreen(ADDPERSONVIEW);
     }
 
 }

@@ -118,7 +118,7 @@ public class MinimalMobileTheme extends DisplayListWatcher
     protected static const BACKGROUND_COLOR:uint = 0xf0f1e6;
     protected static const LIST_BACKGROUND_COLOR:uint = 0xf8f8f8;
     protected static const LIST_HEADER_BACKGROUND_COLOR:uint = 0xeeeeee;
-    protected static const PRIMARY_TEXT_COLOR:uint = 0x666666;
+    protected static const PRIMARY_TEXT_COLOR:uint = 0x956005;
     protected static const DISABLED_TEXT_COLOR:uint = 0x999999;
     protected static const MODAL_OVERLAY_COLOR:uint = 0x666666;
     protected static const MODAL_OVERLAY_ALPHA:Number = 0.8;
@@ -378,7 +378,7 @@ public class MinimalMobileTheme extends DisplayListWatcher
 
         StandardIcons.listDrillDownAccessoryTexture = this.atlas.getTexture("list-accessory-drill-down-icon");
 
-        this.primaryTextFormat = new BitmapFontTextFormat(bitmapFont, this.fontSize, 0xfea60d);
+        this.primaryTextFormat = new BitmapFontTextFormat(bitmapFont, this.fontSize, PRIMARY_TEXT_COLOR);
         this.disabledTextFormat = new BitmapFontTextFormat(bitmapFont, this.fontSize, DISABLED_TEXT_COLOR);
         this.headingTextFormat = new BitmapFontTextFormat(bitmapFont, this.headingFontSize, PRIMARY_TEXT_COLOR);
         this.headingDisabledTextFormat = new BitmapFontTextFormat(bitmapFont, this.headingFontSize, DISABLED_TEXT_COLOR);
@@ -1019,7 +1019,7 @@ public class MinimalMobileTheme extends DisplayListWatcher
         const defaultIcon:Image = new Image(dropDownArrowTexture);
         defaultIcon.scaleX = defaultIcon.scaleY = this.scale;
         button.defaultIcon = defaultIcon;
-        button.gap = Number.POSITIVE_INFINITY, //fill as completely as possible
+        button.gap = Number.POSITIVE_INFINITY; //fill as completely as possible
                 button.iconPosition = Button.ICON_POSITION_RIGHT;
         button.horizontalAlign =  Button.HORIZONTAL_ALIGN_LEFT;
     }

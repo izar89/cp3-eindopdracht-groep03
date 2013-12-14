@@ -1,8 +1,3 @@
-/**
- * User: Stijn Heylen
- * Date: 12/12/13
- * Time: 14:51
- */
 package feathers.themes.controls {
 
 import feathers.controls.Label;
@@ -10,20 +5,36 @@ import feathers.controls.ScrollContainer;
 import feathers.controls.renderers.LayoutGroupListItemRenderer;
 
 import flash.geom.Point;
+
+import starling.animation.Transitions;
+import starling.animation.Tween;
+import starling.core.Starling;
 import starling.display.DisplayObject;
+import starling.display.Image;
 import starling.display.Quad;
 import starling.events.Event;
 import starling.events.Touch;
 import starling.events.TouchEvent;
 import starling.events.TouchPhase;
+import starling.textures.Texture;
+import starling.textures.TextureAtlas;
 
 public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
+
+    [Embed(source="/../assets/images/custom.xml", mimeType="application/octet-stream")]
+    public static const AtlasXml:Class;
+
+    [Embed(source="/../assets/images/custom.png")]
+    public static const AtlasTexture:Class;
 
     private static const HELPER_POINT:Point = new Point();
     private var touchID:int = -1;
 
     private var container:ScrollContainer;
     private var label:Label;
+
+    private var edit:Image;
+    private var remove:Image;
 
     public function SwipeListItemRenderer() {}
 
@@ -71,23 +82,41 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
     /* Functions */
     override protected function initialize():void{
 
-        trace(this.width);
+        // create texture atlas
+        var texture:Texture = Texture.fromBitmap(new AtlasTexture());
+        var xml:XML = XML(new AtlasXml());
+        var atlas:TextureAtlas = new TextureAtlas(texture, xml);
 
-        var edit:Quad = new Quad(75,75, 0xff0000);
-        addChild(edit);
-
-        var remove:Quad = new Quad(75,75, 0xff0000);
+        // add texture
+        var removeTexture:Texture = atlas.getTexture("delete");
+        remove = new Image(removeTexture);
         remove.x = 480 - 75;
+        remove.alpha = 0;
         addChild(remove);
 
+        var editTexture:Texture = atlas.getTexture("edit");
+        edit = new Image(editTexture);
+        edit.x = 480 - 75;
+        edit.alpha = 0;
+        addChild(edit);
+
+        // create container
         container = new ScrollContainer();
         container.horizontalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
         container.verticalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
         container.addEventListener(TouchEvent.TOUCH, listItemTouchHandler);
-        container.backgroundSkin = new Quad(480, 75, 0xf3be33);
+        container.backgroundSkin = new Quad(480, 75, 0xfebe33);
         addChild(container);
 
+        var containerBorder: Quad = new Quad(480,2, 0xfea60d);
+        containerBorder.y = 74;
+        container.addChild(containerBorder);
+
+
         label = new Label();
+        label.x = 30;
+        label.y = 20;
+      //  label.textRendererProperties.color = 0xffffff;
         container.addChild(label);
 
         addEventListener(TouchEvent.TOUCH, touchHandler);
@@ -113,9 +142,64 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
                     break;
                 case TouchPhase.MOVED:
                     currentTarget.x += (touch.globalX - touch.previousGlobalX);
+
+                    if(currentTarget.x > 0){
+                        edit.alpha = (currentTarget.x / 75);
+                        if(currentTarget.x >= 75){
+                            edit.x = currentTarget.x - edit.width;
+                            remove.alpha = 0;
+                        }else {
+                            edit.x = 0;
+                        }
+                    } else if(currentTarget.x < 0){
+                        remove.alpha = -(currentTarget.x / 75);
+                        if(currentTarget.x <= -75){
+                            remove.x = currentTarget.x + currentTarget.width;
+                            edit.alpha = 0;
+                        }else {
+                            remove.x = currentTarget.width - remove.width;
+                        }
+                    }
+
                     break;
                 case TouchPhase.ENDED:
-                    dispatchEventWith('test', true);
+
+                    var positionTween:Tween = new Tween(currentTarget,.7, Transitions.EASE_OUT);
+                    var alphaTween:Tween = new Tween(edit,.7, Transitions.EASE_OUT);
+                    var alphaTweenDelete:Tween = new Tween(remove,.7, Transitions.EASE_OUT);
+
+                    if(currentTarget.x >= 75){
+                        // swipe to edit
+                        positionTween.animate("x", 480);
+                        alphaTween.animate("alpha", 0);
+                        alphaTweenDelete.animate("alpha",0);
+                        alphaTween.animate("x", 405);
+
+                        Starling.juggler.add(positionTween);
+                        Starling.juggler.add(alphaTween);
+                        Starling.juggler.add(alphaTweenDelete);
+
+                        // dispatch event to edit
+                        dispatchEventWith('edit', true);
+
+                    } else if(currentTarget.x <= -75){
+                        // swipe to delete
+                        positionTween.animate("x", -480);
+                        alphaTweenDelete.animate("x", 0);
+                        alphaTween.animate("alpha",0);
+                        alphaTweenDelete.animate("alpha", 0);
+
+                        Starling.juggler.add(positionTween);
+                        Starling.juggler.add(alphaTweenDelete);
+                        Starling.juggler.add(alphaTween);
+
+                        // dispatch event to delete
+                        dispatchEventWith('delete', true);
+                    } else {
+                        positionTween.animate("x", 0);
+                        Starling.juggler.add(positionTween);
+                    }
+
                     break;
             }
         }

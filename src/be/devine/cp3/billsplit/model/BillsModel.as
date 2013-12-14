@@ -1,8 +1,3 @@
-/**
- * User: Stijn Heylen
- * Date: 05/12/13
- * Time: 14:29
- */
 package be.devine.cp3.billsplit.model {
 
 import be.devine.cp3.billsplit.model.service.BillsService;

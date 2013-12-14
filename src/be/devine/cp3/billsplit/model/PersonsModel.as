@@ -1,8 +1,3 @@
-/**
- * User: Stijn Heylen
- * Date: 05/12/13
- * Time: 14:30
- */
 package be.devine.cp3.billsplit.model {
 
 import be.devine.cp3.billsplit.model.service.PersonsService;
@@ -59,13 +54,18 @@ public class PersonsModel extends EventDispatcher{
         }
     }
 
-    public function loadPersons():void{
+    public function loadPersons(billId:String):void{
         var personsService:PersonsService = new PersonsService();
         personsService.addEventListener(Event.COMPLETE, loadCompleteHandler);
-        personsService.load();
+        personsService.load(billId);
     }
 
-    private function writePersons():void{
+    public function addPerson(personVO:PersonVO):void{
+        _persons.push(personVO);
+        dispatchEvent(new Event(PersonsModel.PERSONS_CHANGED_EVENT));
+    }
+
+    public function writePersons():void{
         var personsService:PersonsService = new PersonsService();
         personsService.persons = persons;
         personsService.write();

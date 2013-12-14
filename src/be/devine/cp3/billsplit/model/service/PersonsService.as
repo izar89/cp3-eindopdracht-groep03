@@ -1,8 +1,3 @@
-/**
- * User: Stijn Heylen
- * Date: 10/12/13
- * Time: 20:54
- */
 package be.devine.cp3.billsplit.model.service {
 import be.devine.cp3.billsplit.factory.PersonVOFactory;
 import be.devine.cp3.billsplit.vo.PersonVO;
@@ -27,7 +22,7 @@ public class PersonsService extends EventDispatcher{
     }
 
     /* Functions */
-    public function load():void{
+    public function load(billId:String):void{
         var persons:Vector.<PersonVO> = new Vector.<PersonVO>();
 
         if(file.exists){
@@ -38,7 +33,9 @@ public class PersonsService extends EventDispatcher{
             var jsonObject:Object = JSON.parse(fileContents);
 
             for each(var person:Object in jsonObject){
-                persons.push(PersonVOFactory.createPersonVOFromObject(person));
+                if(billId == PersonVOFactory.createPersonVOFromObject(person).billId){
+                    persons.push(PersonVOFactory.createPersonVOFromObject(person));
+                }
             }
         }
 

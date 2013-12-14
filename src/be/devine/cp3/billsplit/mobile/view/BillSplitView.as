@@ -1,36 +1,72 @@
-/**
- * User: Stijn Heylen
- * Date: 04/12/13
- * Time: 14:26
- */
 package be.devine.cp3.billsplit.mobile.view {
 
+import be.devine.cp3.billsplit.model.BillsModel;
 import be.devine.cp3.billsplit.model.PersonsModel;
+import be.devine.cp3.billsplit.vo.BillVO;
+import be.devine.cp3.billsplit.vo.PersonVO;
+
 import feathers.controls.Button;
+import feathers.controls.Label;
+import feathers.controls.List;
 import feathers.controls.PanelScreen;
+import feathers.controls.ScrollContainer;
+import feathers.controls.renderers.IListItemRenderer;
+import feathers.data.ListCollection;
+import feathers.themes.controls.SwipeListItemRenderer;
+
 import starling.display.DisplayObject;
 import starling.events.Event;
 
 public class BillSplitView extends PanelScreen{
 
+    public static const ADDPERSONVIEW:String = "addPersonView";
+
     private var personsModel:PersonsModel;
-    private var backBtn:Button;
+    private var billsModel:BillsModel;
+
+    private var saveBtn:Button;
+    private var addPersonBtn:Button;
+
+    private var personsList:List;
+
+    private var totalTxt:Label;
+    private var currentBill:BillVO;
 
     public function BillSplitView() {
+
         personsModel = PersonsModel.getInstance();
+        billsModel = BillsModel.getInstance();
 
-        headerProperties.title = 'Bill detail';
+        currentBill = billsModel.currentBill;
 
-        backBtn = new Button();
-        backBtn.label = '< Back';
-        backBtn.addEventListener(Event.TRIGGERED, backButtonTriggeredHandler);
-        headerProperties.leftItems = new <DisplayObject>[backBtn];
+        /* Header */
+        headerProperties.title = 'Bill detail: ' + currentBill.name;
 
-        backButtonHandler = backButtonTriggeredHandler;
+        saveBtn = new Button();
+        saveBtn.label = 'Save';
+        saveBtn.addEventListener(Event.TRIGGERED, saveButtonTriggeredHandler);
+        headerProperties.rightItems = new <DisplayObject>[saveBtn];
 
-        personsModel.loadPersons();
+        /* Footer */
+        footerFactory = customFooterFactory;
+
+        /* List */
+        personsList = new List();
+        personsList.itemRendererFactory = function():IListItemRenderer{
+            var renderer:SwipeListItemRenderer = new SwipeListItemRenderer();
+            return renderer;
+        };
+        personsList.addEventListener(Event.CHANGE, personsListChangeHandler);
+        personsList.addEventListener('edit', editPersonHandler);
+        personsList.addEventListener('delete', deletePersonHandler);
+        addChild(personsList);
+
+        personsModel.loadPersons(billsModel.currentBill.id);
         addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+
+        display();
     }
+
 
     /* Starling events */
     private function addedToStageHandler(e:Event):void {
@@ -43,14 +79,58 @@ public class BillSplitView extends PanelScreen{
         resize();
     }
 
-    private function backButtonTriggeredHandler(e:Event):void {
+    private function addPersonBtnTriggeredHandler(e:Event):void {
+        dispatchEventWith(ADDPERSONVIEW, false);
+    }
+
+    private function personsListChangeHandler(e:Event):void {
+        trace(personsList.selectedItem as PersonVO); //TODO
+    }
+
+    private function saveButtonTriggeredHandler(e:Event):void {
         dispatchEventWith(Event.COMPLETE);
     }
 
-    /* Functions */
-    private function resize():void{
-        //TODO
 
+    /* Functions */
+    private function customFooterFactory():ScrollContainer{
+        var container:ScrollContainer = new ScrollContainer();
+        container.nameList.add( ScrollContainer.ALTERNATE_NAME_TOOLBAR );
+        container.horizontalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
+        container.verticalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
+
+        addPersonBtn = new Button;
+        addPersonBtn.label = "Add Person";
+        addPersonBtn.addEventListener(Event.TRIGGERED, addPersonBtnTriggeredHandler);
+        container.addChild(addPersonBtn);
+
+        totalTxt = new Label();
+        totalTxt.text = "Total: " + currentBill.total as String;
+        totalTxt.x = 50;
+        container.addChild(totalTxt);
+
+        return container;
     }
-}
-}
+
+    private function display():void{
+        personsList.dataProvider = new ListCollection(personsModel.persons);
+    }
+
+    private function resize():void{
+        personsList.setSize(stage.stageWidth, stage.stageHeight);
+    }
+
+    private function editPersonHandler(e:Event):void {
+        trace('edit');
+    }
+
+    private function deletePersonHandler(e:Event):void {
+        trace('delete');
+
+        // billsModel.deleteBill(e.currentTarget as BillVO);
+        //removeChild(e.currentTarget as SwipeListItemRenderer);
+
+        trace(personsList.numChildren);
+    }
+
+}}
