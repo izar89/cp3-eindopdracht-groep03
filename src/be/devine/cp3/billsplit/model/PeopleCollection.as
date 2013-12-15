@@ -1,29 +1,29 @@
 package be.devine.cp3.billsplit.model {
 
-import be.devine.cp3.billsplit.model.service.PersonsService;
+import be.devine.cp3.billsplit.model.service.PeopleService;
 import be.devine.cp3.billsplit.vo.BillVO;
 import be.devine.cp3.billsplit.vo.PersonVO;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 
-public class PersonsModel extends EventDispatcher{
+public class PeopleCollection extends EventDispatcher{
 
-    private static var instance:PersonsModel;
+    private static var instance:PeopleCollection;
 
     private var _persons:Vector.<PersonVO>;
     private var personsChanged:Boolean;
     public static const PERSONS_CHANGED_EVENT:String = "personsChanged";
 
     /* Constructor */
-    public function PersonsModel(e:Enforcer) {
+    public function PeopleCollection(e:Enforcer) {
         if (e == null) {
             throw new Error("PersonsModel is a singleton, use getInstance() instead");
         }
     }
 
-    public static function getInstance():PersonsModel {
+    public static function getInstance():PeopleCollection {
         if (instance == null) {
-            instance = new PersonsModel(new Enforcer());
+            instance = new PeopleCollection(new Enforcer());
         }
         return instance;
     }
@@ -43,8 +43,8 @@ public class PersonsModel extends EventDispatcher{
 
     /* Events */
     private function loadCompleteHandler(e:Event):void {
-        var personsService:PersonsService = e.currentTarget as PersonsService;
-        persons = personsService.persons;
+        var personsService:PeopleService = e.currentTarget as PeopleService;
+        persons = personsService.people;
     }
 
     /* Functions */
@@ -55,20 +55,20 @@ public class PersonsModel extends EventDispatcher{
     }
 
     public function loadPersons(billId:String):void{
-        var personsService:PersonsService = new PersonsService();
+        var personsService:PeopleService = new PeopleService();
         personsService.addEventListener(Event.COMPLETE, loadCompleteHandler);
         personsService.load(billId);
     }
 
     public function addPerson(personVO:PersonVO):void{
         _persons.push(personVO);
-        dispatchEvent(new Event(PersonsModel.PERSONS_CHANGED_EVENT));
+        dispatchEvent(new Event(PeopleCollection.PERSONS_CHANGED_EVENT));
     }
 
-    public function writePersons():void{
-        var personsService:PersonsService = new PersonsService();
-        personsService.persons = persons;
-        personsService.write();
+    public function writePersons(billId:String):void{
+        var personsService:PeopleService = new PeopleService();
+        personsService.people = persons;
+        personsService.write(billId);
     }
 }
 }

@@ -1,6 +1,6 @@
 package be.devine.cp3.billsplit.mobile.view {
 
-import be.devine.cp3.billsplit.model.BillsModel;
+import be.devine.cp3.billsplit.model.BillsCollection;
 import be.devine.cp3.billsplit.vo.BillVO;
 
 import feathers.controls.Button;
@@ -15,14 +15,15 @@ import starling.events.Event;
 
 public class BillsView extends PanelScreen{
 
-    public static const ADDBILLVIEW:String = "addBillView";
+    public static const BILLVIEW:String = "billView";
+    private static const BILLSPLITVIEW:String = "billSplitView";
 
-    private var billsModel:BillsModel;
+    private var billsCollection:BillsCollection;
     private var addBillBtn:Button;
     private var billsList:List;
 
     public function BillsView() {
-        billsModel = BillsModel.getInstance();
+        billsCollection = BillsCollection.getInstance();
 
         /* Header */
         headerProperties.title = 'Bills';
@@ -36,16 +37,16 @@ public class BillsView extends PanelScreen{
             var renderer:SwipeListItemRenderer = new SwipeListItemRenderer();
             return renderer;
         };
-        billsList.addEventListener(Event.CHANGE, billsListChangeHandler);
+
+        billsList.addEventListener('select', selectBillHandler);
         billsList.addEventListener('edit', editBillHandler);
         billsList.addEventListener('delete', deleteBillHandler);
         addChild(billsList);
 
-        billsModel.loadBills();
+        billsCollection.loadBills();
         addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 
         display();
-
     }
 
     /* Starling events */
@@ -61,11 +62,24 @@ public class BillsView extends PanelScreen{
 
     private function addBillBtnTriggeredHandler(e:Event):void {
         // TODO: CHANGE BACK TO ADDBILLVIEW
-        dispatchEventWith(ADDBILLVIEW, false);
+        dispatchEventWith(BILLVIEW, false);
     }
 
-    private function billsListChangeHandler(e:Event):void {
-       trace(billsList.selectedItem as BillVO); //TODO
+    private function selectBillHandler(e:Event):void {
+        billsCollection.currentBill = billsList.selectedItem as BillVO;
+        dispatchEventWith(BILLSPLITVIEW, false);
+    }
+
+    private function editBillHandler(e:Event):void {
+        billsCollection.currentBill = billsList.selectedItem as BillVO;
+        dispatchEventWith(BILLVIEW, false);
+    }
+
+    private function deleteBillHandler(e:Event):void {
+        trace('delete');
+
+        billsCollection.deleteBill(billsList.selectedItem as BillVO);
+        display();
     }
 
     /* Functions */
@@ -84,7 +98,7 @@ public class BillsView extends PanelScreen{
     }
 
     private function display():void{
-        billsList.dataProvider = new ListCollection(billsModel.bills);
+        billsList.dataProvider = new ListCollection(billsCollection.bills);
     }
 
     private function resize():void{
@@ -92,19 +106,5 @@ public class BillsView extends PanelScreen{
 
     }
 
-
-    private function editBillHandler(e:Event):void {
-        trace('edit');
-        // billsModel.updateBill();
-
-    }
-
-    private function deleteBillHandler(e:Event):void {
-        trace('delete');
-
-        // billsModel.deleteBill(billItem);
-        //removeChild(e.currentTarget);
-
-    }
 }
 }

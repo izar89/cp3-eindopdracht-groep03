@@ -5,12 +5,12 @@ import be.devine.cp3.billsplit.vo.BillVO;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 
-public class BillsModel extends EventDispatcher{
+public class BillsCollection extends EventDispatcher{
 
     public static const BILLS_CHANGED_EVENT:String = "billsChanged";
     public static const CURRENTBILL_CHANGED_EVENT:String = "currentBillChanged";
 
-    private static var instance:BillsModel;
+    private static var instance:BillsCollection;
 
     private var _bills:Vector.<BillVO>;
     private var billsChanged:Boolean;
@@ -18,15 +18,15 @@ public class BillsModel extends EventDispatcher{
     private var currentBillChanged:Boolean;
 
     /* Constructor */
-    public function BillsModel(e:Enforcer) {
+    public function BillsCollection(e:Enforcer) {
         if (e == null) {
             throw new Error("BillsModel is a singleton, use getInstance() instead");
         }
     }
 
-    public static function getInstance():BillsModel {
+    public static function getInstance():BillsCollection {
         if (instance == null) {
-            instance = new BillsModel(new Enforcer());
+            instance = new BillsCollection(new Enforcer());
         }
         return instance;
     }
@@ -87,7 +87,7 @@ public class BillsModel extends EventDispatcher{
 
     public function addBill(billVO:BillVO):void{
         _bills.push(billVO);
-        dispatchEvent(new Event(BillsModel.BILLS_CHANGED_EVENT));
+        dispatchEvent(new Event(BillsCollection.BILLS_CHANGED_EVENT));
     }
 
     public function deleteBill(billVO:BillVO):void{

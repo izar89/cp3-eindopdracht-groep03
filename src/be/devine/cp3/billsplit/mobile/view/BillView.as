@@ -1,6 +1,6 @@
 package be.devine.cp3.billsplit.mobile.view {
 
-import be.devine.cp3.billsplit.model.BillsModel;
+import be.devine.cp3.billsplit.model.BillsCollection;
 import be.devine.cp3.billsplit.vo.BillVO;
 import feathers.controls.Button;
 import feathers.controls.Label;
@@ -13,10 +13,10 @@ public class BillView extends PanelScreen{
 
     public static const BILLSVIEW:String = "billsView";
 
-    private var billsModel:BillsModel;
+    private var billsCollection:BillsCollection;
     private var backBtn:Button;
 
-    var splitButtons:SplitButtons;
+    private var splitButtons:SplitButtons;
 
     private var txtNameLabel:Label;
     private var txtTotalLabel:Label;
@@ -26,10 +26,9 @@ public class BillView extends PanelScreen{
     private var addBtn:Button;
 
     private var billType:String;
-    private var billID:String;
 
     public function BillView() {
-        billsModel = BillsModel.getInstance();
+        billsCollection = BillsCollection.getInstance();
 
         headerProperties.title = 'Add Bill';
 
@@ -74,7 +73,7 @@ public class BillView extends PanelScreen{
         addBtn.addEventListener(Event.TRIGGERED, addBtnTriggeredHandler);
         addChild(addBtn);
 
-        billsModel.loadBills();
+        billsCollection.loadBills();
         addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
     }
 
@@ -117,17 +116,17 @@ public class BillView extends PanelScreen{
             }else {
                 newBill.total = parseFloat(txtTotal.text);
             }
-            if(billType = ""){
+            if(billType == ""){
                 newBill.billType = billType;
             }else {
                 newBill.billType = "ownprice"
             }
-            billsModel.addBill(newBill);
-            billsModel.writeBills();
+            billsCollection.addBill(newBill);
+            billsCollection.writeBills();
 
             // TODO: ADD BILL ID TO NEXT VIEW
-            billID = newBill.id;
-            billsModel.currentBill =  newBill;
+            var billID:String = newBill.id;
+            billsCollection.currentBill =  newBill;
             dispatchEventWith(Event.COMPLETE);
 
         }

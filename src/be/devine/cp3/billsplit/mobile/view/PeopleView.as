@@ -1,6 +1,6 @@
 package be.devine.cp3.billsplit.mobile.view {
-import be.devine.cp3.billsplit.model.BillsModel;
-import be.devine.cp3.billsplit.model.PersonsModel;
+import be.devine.cp3.billsplit.model.BillsCollection;
+import be.devine.cp3.billsplit.model.PeopleCollection;
 import be.devine.cp3.billsplit.vo.PersonVO;
 
 import feathers.controls.Button;
@@ -12,10 +12,10 @@ import starling.display.DisplayObject;
 
 import starling.events.Event;
 
-public class PersonView extends PanelScreen {
+public class PeopleView extends PanelScreen {
 
-    private var personsModel:PersonsModel;
-    private var billsModel:BillsModel;
+    private var personsModel:PeopleCollection;
+    private var billsModel:BillsCollection;
 
     private var backBtn:Button;
 
@@ -26,17 +26,11 @@ public class PersonView extends PanelScreen {
     private var txtPrice:TextInput;
     private var addBtn:Button;
 
-    private var billID:String;
-    private var billType:String;
-
-    public function PersonView() {
-        personsModel = PersonsModel.getInstance();
-        billsModel = BillsModel.getInstance();
+    public function PeopleView() {
+        personsModel = PeopleCollection.getInstance();
+        billsModel = BillsCollection.getInstance();
 
         headerProperties.title = 'Add Person';
-
-        billID = billsModel.currentBill.id;
-        billType = billsModel.currentBill.billType;
 
         backBtn = new Button();
         backBtn.label = '< Back';
@@ -51,7 +45,7 @@ public class PersonView extends PanelScreen {
 
         txtPriceLabel = new Label();
         // TODO: price/percentage/shared
-        switch(billType){
+        switch(billsModel.currentBill.billType){
             case "shared":
                 txtPriceLabel.text = "Shared Price";
                 break;
@@ -111,14 +105,14 @@ public class PersonView extends PanelScreen {
             var date:Date = new Date();
             newPerson.id = date.toString();
             newPerson.name = txtName.text;
-            newPerson.billId = billID;
+            newPerson.billId = billsModel.currentBill.id;;
             if(txtPrice.text.length == 0 ){
                 newPerson.amount = parseFloat("0");
             }else {
                 newPerson.amount = parseFloat(txtPrice.text);
             }
             personsModel.addPerson(newPerson);
-            personsModel.writePersons();
+            personsModel.writePersons(billsModel.currentBill.id);
             dispatchEventWith(Event.COMPLETE);
         }
 

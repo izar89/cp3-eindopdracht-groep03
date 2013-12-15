@@ -1,7 +1,7 @@
 package be.devine.cp3.billsplit.mobile.view {
 
-import be.devine.cp3.billsplit.model.BillsModel;
-import be.devine.cp3.billsplit.model.PersonsModel;
+import be.devine.cp3.billsplit.model.BillsCollection;
+import be.devine.cp3.billsplit.model.PeopleCollection;
 import be.devine.cp3.billsplit.vo.BillVO;
 import be.devine.cp3.billsplit.vo.PersonVO;
 
@@ -21,8 +21,8 @@ public class BillSplitView extends PanelScreen{
 
     public static const ADDPERSONVIEW:String = "addPersonView";
 
-    private var personsModel:PersonsModel;
-    private var billsModel:BillsModel;
+    private var personsCollection:PeopleCollection;
+    private var billsCollection:BillsCollection;
 
     private var saveBtn:Button;
     private var addPersonBtn:Button;
@@ -30,17 +30,14 @@ public class BillSplitView extends PanelScreen{
     private var personsList:List;
 
     private var totalTxt:Label;
-    private var currentBill:BillVO;
 
     public function BillSplitView() {
 
-        personsModel = PersonsModel.getInstance();
-        billsModel = BillsModel.getInstance();
-
-        currentBill = billsModel.currentBill;
+        personsCollection = PeopleCollection.getInstance();
+        billsCollection = BillsCollection.getInstance();
 
         /* Header */
-        headerProperties.title = 'Bill detail: ' + currentBill.name;
+        headerProperties.title = 'Bill detail: ' + billsCollection.currentBill.name;
 
         saveBtn = new Button();
         saveBtn.label = 'Save';
@@ -61,12 +58,11 @@ public class BillSplitView extends PanelScreen{
         personsList.addEventListener('delete', deletePersonHandler);
         addChild(personsList);
 
-        personsModel.loadPersons(billsModel.currentBill.id);
+        personsCollection.loadPersons(billsCollection.currentBill.id);
         addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 
         display();
     }
-
 
     /* Starling events */
     private function addedToStageHandler(e:Event):void {
@@ -91,7 +87,6 @@ public class BillSplitView extends PanelScreen{
         dispatchEventWith(Event.COMPLETE);
     }
 
-
     /* Functions */
     private function customFooterFactory():ScrollContainer{
         var container:ScrollContainer = new ScrollContainer();
@@ -105,7 +100,7 @@ public class BillSplitView extends PanelScreen{
         container.addChild(addPersonBtn);
 
         totalTxt = new Label();
-        totalTxt.text = "Total: " + currentBill.total as String;
+        totalTxt.text = "Total: " + billsCollection.currentBill.total as String;
         totalTxt.x = 50;
         container.addChild(totalTxt);
 
@@ -113,7 +108,7 @@ public class BillSplitView extends PanelScreen{
     }
 
     private function display():void{
-        personsList.dataProvider = new ListCollection(personsModel.persons);
+        personsList.dataProvider = new ListCollection(personsCollection.persons);
     }
 
     private function resize():void{
