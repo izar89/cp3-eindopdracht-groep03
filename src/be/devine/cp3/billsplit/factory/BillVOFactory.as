@@ -1,8 +1,3 @@
-/**
- * User: Stijn Heylen
- * Date: 11/12/13
- * Time: 13:14
- */
 package be.devine.cp3.billsplit.factory {
 import be.devine.cp3.billsplit.vo.BillVO;
 

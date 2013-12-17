@@ -44,7 +44,7 @@ public class PeopleView extends PanelScreen {
         addChild(txtNameLabel);
 
         txtPriceLabel = new Label();
-        // TODO: price/percentage/shared
+
         switch(billsModel.currentBill.billType){
             case "shared":
                 txtPriceLabel.text = "Shared Price";
@@ -64,13 +64,13 @@ public class PeopleView extends PanelScreen {
         // Textfields
         txtName = new TextInput();
         txtName.maxChars = 16;
-        //input.restrict = "0-9";
         addChild(txtName);
 
         txtPrice = new TextInput();
         txtPrice.maxChars = 16;
         txtPrice.restrict = "0-9\\,";
         addChild(txtPrice);
+
 
         // Button
         addBtn = new Button();

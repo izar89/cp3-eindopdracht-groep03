@@ -35,7 +35,6 @@ public class SplitButtons extends Sprite {
         textureAtlas = new TextureAtlas(Texture.fromBitmapData(atlasBitmapData, false), XML(new ATLAS_XML()));
 
         buttonGroup = new LayoutGroup();
-        // buttonGroup.addEventListener(FeathersEventType.CREATION_COMPLETE, buttonGroupCreationCompleteHandler);
         addChild(buttonGroup);
 
         var layout:HorizontalLayout = new HorizontalLayout();

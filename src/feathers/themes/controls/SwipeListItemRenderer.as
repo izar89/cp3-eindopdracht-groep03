@@ -171,7 +171,6 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
         containerBorder.y = 74;
         container.addChild(containerBorder);
 
-
         label = new Label();
         label.x = 30;
         label.y = 20;
@@ -191,4 +190,3 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
     }
 }
 }
-

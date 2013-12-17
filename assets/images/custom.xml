@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="custom.png">
-	<!-- Created with Adobe Flash Professional version 13.1.0.217 -->
-	<!-- http://www.adobe.com/products/flash.html -->
 	<SubTexture name="delete" x="4" y="4" width="75" height="75" pivotX="0" pivotY="0"/>
 	<SubTexture name="edit" x="83" y="4" width="75" height="75" pivotX="0" pivotY="0"/>
 	<SubTexture name="ownprice" x="162" y="4" width="150" height="75" pivotX="0" pivotY="0"/>

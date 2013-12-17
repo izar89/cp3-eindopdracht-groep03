@@ -115,7 +115,7 @@ public class MinimalMobileTheme extends DisplayListWatcher
     protected static const FORWARD_BUTTON_SCALE_REGION1:int = 9;
     protected static const FORWARD_BUTTON_SCALE_REGION2:int = 1;
 
-    protected static const BACKGROUND_COLOR:uint = 0xf0f1e6;
+    protected static const BACKGROUND_COLOR:uint = 0xf5f3ed;
     protected static const LIST_BACKGROUND_COLOR:uint = 0xf8f8f8;
     protected static const LIST_HEADER_BACKGROUND_COLOR:uint = 0xeeeeee;
     protected static const PRIMARY_TEXT_COLOR:uint = 0x956005;

@@ -2,7 +2,7 @@ package be.devine.cp3.billsplit.mobile.view {
 
 import be.devine.cp3.billsplit.model.BillsCollection;
 import be.devine.cp3.billsplit.model.PeopleCollection;
-import be.devine.cp3.billsplit.vo.BillVO;
+import be.devine.cp3.billsplit.model.service.SplitService;
 import be.devine.cp3.billsplit.vo.PersonVO;
 
 import feathers.controls.Button;
@@ -24,12 +24,16 @@ public class BillSplitView extends PanelScreen{
     private var personsCollection:PeopleCollection;
     private var billsCollection:BillsCollection;
 
+    private var splitService:SplitService;
+
     private var saveBtn:Button;
     private var addPersonBtn:Button;
 
     private var personsList:List;
 
     private var totalTxt:Label;
+    private var billTotal:Number;
+    private var rest:Number;
 
     public function BillSplitView() {
 
@@ -37,7 +41,9 @@ public class BillSplitView extends PanelScreen{
         billsCollection = BillsCollection.getInstance();
 
         /* Header */
-        headerProperties.title = 'Bill detail: ' + billsCollection.currentBill.name;
+        headerProperties.title = billsCollection.currentBill.name;
+
+        billTotal = billsCollection.currentBill.total;
 
         saveBtn = new Button();
         saveBtn.label = 'Save';
@@ -60,6 +66,33 @@ public class BillSplitView extends PanelScreen{
 
         personsCollection.loadPersons(billsCollection.currentBill.id);
         addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+
+        splitService = new SplitService();
+
+        // arr with all people
+        var arrPeople:Array = ["name 1", "name 2", "name 3"];
+        // arr with all people.amount
+        var arrPrices:Array = [2, 3, 5, 6, 4];
+        // arr with all people.amount (percent)
+        var arrPercentages:Array = [30,20,40];
+
+        var billtype:String = "shared";
+
+        switch(billtype){
+
+            case "shared":
+                rest = splitService.shared(billTotal,arrPeople);
+                break;
+            case "ownprice":
+                rest = splitService.shared(billTotal, arrPrices);
+                break;
+            case "percentage":
+                rest = splitService.percentage(billTotal, arrPercentages);
+                break;
+            default:
+                rest = splitService.shared(billTotal,arrPeople);
+            break;
+        }
 
         display();
     }
@@ -100,7 +133,8 @@ public class BillSplitView extends PanelScreen{
         container.addChild(addPersonBtn);
 
         totalTxt = new Label();
-        totalTxt.text = "Total: " + billsCollection.currentBill.total as String;
+        trace(rest);
+        totalTxt.text = "Total: " + billTotal + " / Rest: " + rest;
         totalTxt.x = 50;
         container.addChild(totalTxt);
 

@@ -7,6 +7,6 @@ public class PersonVO {
     public var amount:Number;
 
     public function toString():String{
-        return name;
+        return name + ": $" + amount;
     }
 }}
