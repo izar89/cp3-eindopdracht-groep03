@@ -3,9 +3,7 @@ package feathers.themes.controls {
 import feathers.controls.Label;
 import feathers.controls.ScrollContainer;
 import feathers.controls.renderers.LayoutGroupListItemRenderer;
-
-import flash.geom.Point;
-
+import feathers.events.FeathersEventType;
 import starling.animation.Transitions;
 import starling.animation.Tween;
 import starling.core.Starling;
@@ -23,22 +21,19 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
     [Embed(source="/../assets/images/custom.xml", mimeType="application/octet-stream")]
     public static const AtlasXml:Class;
-
     [Embed(source="/../assets/images/custom.png")]
     public static const AtlasTexture:Class;
 
-    private static const HELPER_POINT:Point = new Point();
+    public static const SELECT:String = "swipeListItemRendererSelect";
+    public static const EDIT:String = "swipeListItemRendererEdit";
+    public static const DELETE:String = "swipeListItemRendererDelete";
+
     private var touchID:int = -1;
 
     private var container:ScrollContainer;
     private var label:Label;
-
     private var editImg:Image;
     private var removeImg:Image;
-
-    public function SwipeListItemRenderer() {}
-
-    /* Getters & setters */
 
     /* Events */
     private function removedFromStageHandler(e:Event):void {
@@ -54,13 +49,13 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
         if(this.touchID >= 0){
             // a touch has begun, so we'll ignore all other touches.
-            var touch:Touch = e.getTouch( this, null, this.touchID );
-            if( !touch ) return; // this should not happen.
+            var touch:Touch = e.getTouch( this, null, touchID );
+            if(!touch){
+                return;
+            }
 
             var currentTarget:DisplayObject = e.currentTarget as DisplayObject;
             switch(touch.phase){
-                case TouchPhase.BEGAN:
-                    break;
                 case TouchPhase.MOVED:
                     currentTarget.x += (touch.globalX - touch.previousGlobalX);
                     if(currentTarget.x > 0){
@@ -83,64 +78,72 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
                     break;
                 case TouchPhase.ENDED:
 
-                    var positionTween:Tween = new Tween(currentTarget,.7, Transitions.EASE_OUT);
-                    var alphaTween:Tween = new Tween(editImg,.7, Transitions.EASE_OUT);
-                    var alphaTweenDelete:Tween = new Tween(removeImg,.7, Transitions.EASE_OUT);
+                    var containerTween:Tween = new Tween(currentTarget,.7, Transitions.EASE_OUT);
+                    var editTween:Tween = new Tween(editImg,.7, Transitions.EASE_OUT);
+                    editTween.onComplete = editTweenOnCompleteHandler;
+                    var deleteTween:Tween = new Tween(removeImg,.7, Transitions.EASE_OUT);
+                    deleteTween.onComplete = deleteTweenOnCompleteHandler;
 
                     this.isSelected = true;
 
-                    if(currentTarget.x >= 75){
-                        // swipe to edit
-                        positionTween.animate("x", 480);
-                        alphaTween.animate("alpha", 0);
-                        alphaTweenDelete.animate("alpha",0);
-                        alphaTween.animate("x", 405);
+                    if(currentTarget.x >= 75){ // EDIT
 
-                        Starling.juggler.add(positionTween);
-                        Starling.juggler.add(alphaTween);
-                        Starling.juggler.add(alphaTweenDelete);
+                        containerTween.animate("x", 480);
+                        editTween.animate("alpha", 0);
+                        editTween.animate("x", 405);
+                        Starling.juggler.add(containerTween);
+                        Starling.juggler.add(editTween);
 
-                        // dispatch event to edit
-                        dispatchEventWith('edit', true);
+                    } else if(currentTarget.x <= -75){ // DELETE
 
-                    } else if(currentTarget.x <= -75){
-                        // swipe to delete
-                        positionTween.animate("x", -480);
-                        alphaTweenDelete.animate("x", 0);
-                        alphaTween.animate("alpha",0);
-                        alphaTweenDelete.animate("alpha", 0);
+                        containerTween.animate("x", -480);
+                        deleteTween.animate("x", 0);
+                        deleteTween.animate("alpha", 0);
+                        Starling.juggler.add(containerTween);
+                        Starling.juggler.add(deleteTween);
 
-                        Starling.juggler.add(positionTween);
-                        Starling.juggler.add(alphaTweenDelete);
-                        Starling.juggler.add(alphaTween);
-
-                        // dispatch event to delete
-                        dispatchEventWith('delete', true);
+                    } else if(currentTarget.x >= -5 && currentTarget.x <= 5){
+                        // select item
+                        dispatchEventWith(SELECT, true);
                     } else {
-                        positionTween.animate("x", 0);
-                        Starling.juggler.add(positionTween);
-
-                        // dispatch event to select
-                        dispatchEventWith('select', true);
+                        containerTween.animate("x", 0);
+                        Starling.juggler.add(containerTween);
                     }
 
                     // the touch has ended, so now we can start watching for a new one.
-                    this.touchID = -1;
+                    _owner.removeEventListener( FeathersEventType.SCROLL_START, owner_scrollStartHandler );
+                    touchID = -1;
                     break;
             }
         } else {
             // we aren't tracking another touch, so let's look for a new one.
             touch = e.getTouch( this, TouchPhase.BEGAN );
-            if( !touch ) return;
+            if(!touch){
+                return;
+            };
 
             // save the touch ID so that we can track this touch's phases.
-            this.touchID = touch.id;
+            touchID = touch.id;
+
+            // stop list scroll
+            _owner.addEventListener(FeathersEventType.SCROLL_START, owner_scrollStartHandler);
         }
+    }
+
+    protected function owner_scrollStartHandler( event:Event ):void{
+        if(touchID < 0){
+            return;
+        }
+
+        // no need to listen anymore. the list won't try to scroll again with this touch.
+        _owner.removeEventListener( FeathersEventType.SCROLL_START, owner_scrollStartHandler );
+
+        // no scrolling right now, please!
+        _owner.stopScrolling();
     }
 
     /* Functions */
     override protected function initialize():void{
-
         // create texture atlas
         var texture:Texture = Texture.fromBitmap(new AtlasTexture());
         var xml:XML = XML(new AtlasXml());
@@ -174,10 +177,8 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
         label = new Label();
         label.x = 30;
         label.y = 20;
-        //label.textRendererProperties.color = 0xffffff;
         container.addChild(label);
 
-        //addEventListener(TouchEvent.TOUCH, touchHandler);
         addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler);
     }
 
@@ -187,6 +188,14 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
         } else {
             label.text = null;
         }
+    }
+
+    private function editTweenOnCompleteHandler(){
+        dispatchEventWith(EDIT, true);
+    }
+
+    private function deleteTweenOnCompleteHandler(){
+        dispatchEventWith(DELETE, true);
     }
 }
 }

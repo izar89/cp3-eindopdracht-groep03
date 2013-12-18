@@ -31,16 +31,15 @@ public class BillsView extends PanelScreen{
         /* Footer */
         footerFactory = customFooterFactory;
 
-        // List
+        /* Body */
         billsList = new List();
         billsList.itemRendererFactory = function():IListItemRenderer{
             var renderer:SwipeListItemRenderer = new SwipeListItemRenderer();
             return renderer;
         };
-
-        billsList.addEventListener('select', selectBillHandler);
-        billsList.addEventListener('edit', editBillHandler);
-        billsList.addEventListener('delete', deleteBillHandler);
+        billsList.addEventListener(SwipeListItemRenderer.SELECT, selectBillHandler);
+        billsList.addEventListener(SwipeListItemRenderer.EDIT, editBillHandler);
+        billsList.addEventListener(SwipeListItemRenderer.DELETE, deleteBillHandler);
         addChild(billsList);
 
         billsCollection.loadBills();
@@ -61,7 +60,6 @@ public class BillsView extends PanelScreen{
     }
 
     private function addBillBtnTriggeredHandler(e:Event):void {
-        // TODO: CHANGE BACK TO ADDBILLVIEW
         dispatchEventWith(BILLVIEW, false);
     }
 
@@ -76,8 +74,6 @@ public class BillsView extends PanelScreen{
     }
 
     private function deleteBillHandler(e:Event):void {
-        trace('delete');
-
         billsCollection.deleteBill(billsList.selectedItem as BillVO);
         display();
     }
@@ -103,8 +99,6 @@ public class BillsView extends PanelScreen{
 
     private function resize():void{
         billsList.setSize(stage.stageWidth, stage.stageHeight);
-
     }
-
 }
 }

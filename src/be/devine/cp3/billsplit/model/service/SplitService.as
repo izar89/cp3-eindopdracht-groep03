@@ -3,11 +3,8 @@ import starling.events.EventDispatcher;
 
 public class SplitService extends EventDispatcher {
 
-
     public function SplitService() {
-
         trace("in split");
-
     }
 
     // total bill amount + array all people
