@@ -4,6 +4,9 @@ import feathers.controls.Label;
 import feathers.controls.ScrollContainer;
 import feathers.controls.renderers.LayoutGroupListItemRenderer;
 import feathers.events.FeathersEventType;
+
+import flash.utils.ByteArray;
+
 import starling.animation.Transitions;
 import starling.animation.Tween;
 import starling.core.Starling;
@@ -19,10 +22,10 @@ import starling.textures.TextureAtlas;
 
 public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
-    [Embed(source="/../assets/images/custom.xml", mimeType="application/octet-stream")]
+    [Embed(source="/../assets/images/custom/custom.xml", mimeType="application/octet-stream")]
     public static const AtlasXml:Class;
-    [Embed(source="/../assets/images/custom.png")]
-    public static const AtlasTexture:Class;
+    [Embed(source="/../assets/images/custom/custom.atf", mimeType="application/octet-stream")]
+    public static const AtfAsset:Class;
 
     public static const SELECT:String = "swipeListItemRendererSelect";
     public static const EDIT:String = "swipeListItemRendererEdit";
@@ -32,8 +35,8 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
     private var container:ScrollContainer;
     private var label:Label;
-    private var editImg:Image;
-    private var removeImg:Image;
+    private var editIcon:Image;
+    private var deleteIcon:Image;
 
     /* Events */
     private function removedFromStageHandler(e:Event):void {
@@ -59,29 +62,29 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
                 case TouchPhase.MOVED:
                     currentTarget.x += (touch.globalX - touch.previousGlobalX);
                     if(currentTarget.x > 0){
-                        editImg.alpha = (currentTarget.x / 75);
+                        editIcon.alpha = (currentTarget.x / 75);
                         if(currentTarget.x >= 75){
-                            editImg.x = currentTarget.x - editImg.width;
-                            removeImg.alpha = 0;
+                            editIcon.x = currentTarget.x - editIcon.width;
+                            deleteIcon.alpha = 0;
                         }else {
-                            editImg.x = 0;
+                            editIcon.x = 0;
                         }
                     } else if(currentTarget.x < 0){
-                        removeImg.alpha = -(currentTarget.x / 75);
+                        deleteIcon.alpha = -(currentTarget.x / 75);
                         if(currentTarget.x <= -75){
-                            removeImg.x = currentTarget.x + currentTarget.width;
-                            editImg.alpha = 0;
+                            deleteIcon.x = currentTarget.x + currentTarget.width;
+                            editIcon.alpha = 0;
                         }else {
-                            removeImg.x = currentTarget.width - removeImg.width;
+                            deleteIcon.x = currentTarget.width - deleteIcon.width;
                         }
                     }
                     break;
                 case TouchPhase.ENDED:
 
                     var containerTween:Tween = new Tween(currentTarget,.7, Transitions.EASE_OUT);
-                    var editTween:Tween = new Tween(editImg,.7, Transitions.EASE_OUT);
+                    var editTween:Tween = new Tween(editIcon,.7, Transitions.EASE_OUT);
                     editTween.onComplete = editTweenOnCompleteHandler;
-                    var deleteTween:Tween = new Tween(removeImg,.7, Transitions.EASE_OUT);
+                    var deleteTween:Tween = new Tween(deleteIcon,.7, Transitions.EASE_OUT);
                     deleteTween.onComplete = deleteTweenOnCompleteHandler;
 
                     this.isSelected = true;
@@ -120,7 +123,7 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
             touch = e.getTouch( this, TouchPhase.BEGAN );
             if(!touch){
                 return;
-            };
+            }
 
             // save the touch ID so that we can track this touch's phases.
             touchID = touch.id;
@@ -145,22 +148,22 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
     /* Functions */
     override protected function initialize():void{
         // create texture atlas
-        var texture:Texture = Texture.fromBitmap(new AtlasTexture());
+        var texture:Texture = Texture.fromAtfData(new AtfAsset() as ByteArray);
         var xml:XML = XML(new AtlasXml());
         var atlas:TextureAtlas = new TextureAtlas(texture, xml);
 
         // add texture
         var removeTexture:Texture = atlas.getTexture("delete");
-        removeImg = new Image(removeTexture);
-        removeImg.x = 480 - 75;
-        removeImg.alpha = 0;
-        addChild(removeImg);
+        deleteIcon = new Image(removeTexture);
+        deleteIcon.x = 480 - 75;
+        deleteIcon.alpha = 0;
+        addChild(deleteIcon);
 
         var editTexture:Texture = atlas.getTexture("edit");
-        editImg = new Image(editTexture);
-        editImg.x = 480 - 75;
-        editImg.alpha = 0;
-        addChild(editImg);
+        editIcon = new Image(editTexture);
+        editIcon.x = 480 - 75;
+        editIcon.alpha = 0;
+        addChild(editIcon);
 
         // create container
         container = new ScrollContainer();

@@ -133,7 +133,7 @@ public class BillSplitView extends PanelScreen{
         container.addChild(addPersonBtn);
 
         totalTxt = new Label();
-        trace(rest);
+        trace("[BillSplitView] rest: " + rest);
         totalTxt.text = "Total: " + billTotal + " / Rest: " + rest;
         totalTxt.x = 50;
         container.addChild(totalTxt);

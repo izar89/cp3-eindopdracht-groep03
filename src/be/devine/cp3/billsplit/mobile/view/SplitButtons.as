@@ -15,10 +15,10 @@ import starling.textures.TextureAtlas;
 
 public class SplitButtons extends Sprite {
 
-    [Embed(source="/../assets/images/custom.png")]
+    [Embed(source="/../assets/images/custom/custom.png")]
     protected static const ATLAS_IMAGE:Class;
 
-    [Embed(source="/../assets/images/custom.xml", mimeType="application/octet-stream")]
+    [Embed(source="/../assets/images/custom/custom.xml", mimeType="application/octet-stream")]
     protected static const ATLAS_XML:Class;
 
     private var buttonGroup:LayoutGroup;

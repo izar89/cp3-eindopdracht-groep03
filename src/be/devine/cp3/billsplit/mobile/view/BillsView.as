@@ -98,7 +98,7 @@ public class BillsView extends PanelScreen{
     }
 
     private function resize():void{
-        billsList.setSize(stage.stageWidth, stage.stageHeight);
+       // billsList.setSize(stage.stageWidth, stage.stageHeight);
     }
 }
 }
