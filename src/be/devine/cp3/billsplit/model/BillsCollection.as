@@ -1,6 +1,8 @@
 package be.devine.cp3.billsplit.model {
 
 import be.devine.cp3.billsplit.model.service.BillsService;
+import be.devine.cp3.billsplit.model.service.PeopleService;
+
 import flash.events.Event;
 import flash.events.EventDispatcher;
 
@@ -83,9 +85,18 @@ public class BillsCollection extends EventDispatcher{
         billService.writeBill(currentBill);
     }
 
-    public function deleteBill(billVO:BillModel):void{
-        var i:int = bills.indexOf(billVO);
+    public function deleteCurrentBill():void{
+        var billService:BillsService = new BillsService();
+        var peopleService:PeopleService = new PeopleService();
+        var i:int = bills.indexOf(currentBill);
+
+        // delete from list
         bills.splice(i, 1);
+
+        // delete bill from json
+        billService.deleteBill(currentBill);
+
+        //TODO: delete people from bill
     }
 }
 }

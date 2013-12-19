@@ -45,14 +45,24 @@ public class BillsService extends EventDispatcher{
         fileStream.close();
     }
 
-    public function writeBill(bill:BillModel):void{
-        load();
+    private function deleteBillById(id):void{
         for(var i:uint = 0 ; i < bills.length ; i++){
-            if(bills[i].id == bill.id){
+            if(bills[i].id == id){
                 bills.splice(i, 1);
             }
         }
+    }
+
+    public function writeBill(bill:BillModel):void{
+        load();
+        deleteBillById(bill.id);
         bills.push(bill);
+        write();
+    }
+
+    public function deleteBill(bill:BillModel):void{
+        load();
+        deleteBillById(bill.id);
         write();
     }
 }

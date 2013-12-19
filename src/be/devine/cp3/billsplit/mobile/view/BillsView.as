@@ -73,7 +73,8 @@ public class BillsView extends PanelScreen{
     }
 
     private function deleteBillHandler(e:Event):void {
-        billsCollection.deleteBill(billsList.selectedItem as BillModel);
+        billsCollection.currentBill = billsList.selectedItem as BillModel;
+        billsCollection.deleteCurrentBill();
         display();
     }
 
