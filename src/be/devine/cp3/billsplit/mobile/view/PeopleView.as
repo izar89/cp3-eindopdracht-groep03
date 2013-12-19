@@ -1,16 +1,14 @@
 package be.devine.cp3.billsplit.mobile.view {
+
 import be.devine.cp3.billsplit.Application;
 import be.devine.cp3.billsplit.model.BillsCollection;
 import be.devine.cp3.billsplit.model.PeopleCollection;
 import be.devine.cp3.billsplit.vo.PersonVO;
-
 import feathers.controls.Button;
 import feathers.controls.Label;
 import feathers.controls.PanelScreen;
 import feathers.controls.TextInput;
-
 import starling.display.DisplayObject;
-
 import starling.events.Event;
 
 public class PeopleView extends PanelScreen {
@@ -31,6 +29,47 @@ public class PeopleView extends PanelScreen {
         personsModel = PeopleCollection.getInstance();
         billsModel = BillsCollection.getInstance();
 
+        init();
+
+        addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+    }
+
+    /* Events */
+    private function addedToStageHandler(e:Event):void {
+        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+        stage.addEventListener(Event.RESIZE, resizeHandler);
+        resize();
+    }
+
+    private function resizeHandler(e:Event):void {
+        resize();
+    }
+
+    private function backBtnTriggeredHandler(e:Event):void {
+        dispatchEventWith(Application.BILLSPLITVIEW);
+    }
+
+    private function addPersonTriggeredHandler(e:Event):void {
+
+        if(txtName.text.length > 0){
+            var newPerson:PersonVO = new PersonVO();
+            var date:Date = new Date();
+            newPerson.id = date.toString();
+            newPerson.name = txtName.text;
+            newPerson.billId = billsModel.currentBill.id;;
+            if(txtPrice.text.length == 0 ){
+                newPerson.amount = parseFloat("0");
+            }else {
+                newPerson.amount = parseFloat(txtPrice.text);
+            }
+            personsModel.addPerson(newPerson);
+            personsModel.writePersons(billsModel.currentBill.id);
+            dispatchEventWith(Application.BILLSPLITVIEW);
+        }
+    }
+
+    /* Functions */
+    private function init():void{
         headerProperties.title = 'Add Person';
 
         backBtn = new Button();
@@ -72,52 +111,13 @@ public class PeopleView extends PanelScreen {
         txtPrice.restrict = "0-9\\,";
         addChild(txtPrice);
 
-
         // Button
         addBtn = new Button();
         addBtn.label = 'Add Person';
         addBtn.addEventListener(Event.TRIGGERED, addPersonTriggeredHandler);
         addChild(addBtn);
-
-
-        addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
     }
 
-    /* Starling events */
-    private function addedToStageHandler(e:Event):void {
-        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-        stage.addEventListener(Event.RESIZE, resizeHandler);
-        resize();
-    }
-
-    private function resizeHandler(e:Event):void {
-        resize();
-    }
-
-    private function backBtnTriggeredHandler(e:Event):void {
-        dispatchEventWith(Application.BILLSPLITVIEW);
-    }
-
-    private function addPersonTriggeredHandler(e:Event):void {
-
-        if(txtName.text.length > 0){
-            var newPerson:PersonVO = new PersonVO();
-            var date:Date = new Date();
-            newPerson.id = date.toString();
-            newPerson.name = txtName.text;
-            newPerson.billId = billsModel.currentBill.id;;
-            if(txtPrice.text.length == 0 ){
-                newPerson.amount = parseFloat("0");
-            }else {
-                newPerson.amount = parseFloat(txtPrice.text);
-            }
-            personsModel.addPerson(newPerson);
-            personsModel.writePersons(billsModel.currentBill.id);
-            dispatchEventWith(Application.BILLSPLITVIEW);
-        }
-    }
-
-    /* Functions */
     private function resize():void{
         txtName.setSize(stage.stageWidth, txtName.minHeight);
         txtPrice.setSize(stage.stageWidth, txtPrice.minHeight);

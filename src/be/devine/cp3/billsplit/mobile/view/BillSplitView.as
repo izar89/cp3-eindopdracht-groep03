@@ -25,8 +25,6 @@ public class BillSplitView extends PanelScreen{
     private var personsCollection:PeopleCollection;
     private var billsCollection:BillsCollection;
 
-    private var splitService:SplitService;
-
     private var saveBtn:Button;
     private var addPersonBtn:Button;
 
@@ -68,7 +66,6 @@ public class BillSplitView extends PanelScreen{
         personsCollection.loadPersons(billsCollection.currentBill.id);
         addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 
-        splitService = new SplitService();
 
         // arr with all people
         var arrPeople:Array = ["name 1", "name 2", "name 3"];
@@ -82,16 +79,16 @@ public class BillSplitView extends PanelScreen{
         switch(billtype){
 
             case "shared":
-                rest = splitService.shared(billTotal,arrPeople);
+                rest = SplitService.shared(billTotal,arrPeople);
                 break;
             case "ownprice":
-                rest = splitService.shared(billTotal, arrPrices);
+                rest = SplitService.shared(billTotal, arrPrices);
                 break;
             case "percentage":
-                rest = splitService.percentage(billTotal, arrPercentages);
+                rest = SplitService.percentage(billTotal, arrPercentages);
                 break;
             default:
-                rest = splitService.shared(billTotal,arrPeople);
+                rest = SplitService.shared(billTotal,arrPeople);
             break;
         }
 

@@ -3,8 +3,6 @@ package be.devine.cp3.billsplit.mobile.view {
 import be.devine.cp3.billsplit.Application;
 import be.devine.cp3.billsplit.model.BillModel;
 import be.devine.cp3.billsplit.model.BillsCollection;
-import be.devine.cp3.billsplit.model.service.BillsService;
-
 import feathers.controls.Button;
 import feathers.controls.Label;
 import feathers.controls.PanelScreen;
@@ -35,9 +33,7 @@ public class BillView extends PanelScreen{
         init();
 
         billsCollection.addEventListener(BillsCollection.CURRENTBILL_CHANGED_EVENT, currentBillChangedHandler);
-        billsCollection.currentBill.addEventListener(BillModel.BILLTYPE_CHANGED_EVENT, billTypeChangedHandler);
         currentBillChangedHandler();
-        billTypeChangedHandler();
 
         addEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
     }
@@ -69,8 +65,10 @@ public class BillView extends PanelScreen{
     }
 
     private function currentBillChangedHandler(e:flash.events.Event = null):void {
-        txtName.text = billsCollection.currentBill.name;
-        txtTotal.text = billsCollection.currentBill.total.toString();
+        if(billsCollection.currentBill){
+            txtName.text = billsCollection.currentBill.name;
+            txtTotal.text = billsCollection.currentBill.total.toString();
+        }
     }
 
     /* Functions */
@@ -141,11 +139,6 @@ public class BillView extends PanelScreen{
         submitBtn.y = txtTotal.height + txtTotal.y + 50;
         submitBtn.width = 400;
         submitBtn.x = (stage.stageWidth - submitBtn.width) / 2;
-    }
-
-
-    private function billTypeChangedHandler(e:flash.events.Event = null):void {
-        splitButtons.setSplitBtnIcons();
     }
 }
 }
