@@ -56,14 +56,14 @@ public class PeopleView extends PanelScreen {
             var date:Date = new Date();
             newPerson.id = date.toString();
             newPerson.name = txtName.text;
-            newPerson.billId = billsModel.currentBill.id;;
+            newPerson.billId = billsModel.currentBill.id;
             if(txtPrice.text.length == 0 ){
                 newPerson.amount = parseFloat("0");
             }else {
                 newPerson.amount = parseFloat(txtPrice.text);
             }
             personsModel.addPerson(newPerson);
-            personsModel.writePersons(billsModel.currentBill.id);
+            personsModel.writePeople(billsModel.currentBill.id);
             dispatchEventWith(Application.BILLSPLITVIEW);
         }
     }

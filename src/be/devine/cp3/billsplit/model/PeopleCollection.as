@@ -9,9 +9,9 @@ public class PeopleCollection extends EventDispatcher{
 
     private static var instance:PeopleCollection;
 
-    private var _persons:Vector.<PersonVO>;
-    private var personsChanged:Boolean;
-    public static const PERSONS_CHANGED_EVENT:String = "personsChanged";
+    private var _people:Vector.<PersonVO>;
+    private var peopleChanged:Boolean;
+    public static const PEOPLE_CHANGED_EVENT:String = "peopleChanged";
 
     /* Constructor */
     public function PeopleCollection(e:Enforcer) {
@@ -28,46 +28,46 @@ public class PeopleCollection extends EventDispatcher{
     }
 
     /* Getters & setters */
-    [Bindable(event="personsChanged")]
-    public function get persons():Vector.<PersonVO> {
-        return _persons;
+    [Bindable(event="peopleChanged")]
+    public function get people():Vector.<PersonVO> {
+        return _people;
     }
-    public function set persons(value:Vector.<PersonVO>):void {
-        if (_persons == value) return;
-        personsChanged = true;
-        _persons = value;
+    public function set people(value:Vector.<PersonVO>):void {
+        if (_people == value) return;
+        peopleChanged = true;
+        _people = value;
         commitProperties();
-        dispatchEvent(new Event(PERSONS_CHANGED_EVENT));
+        dispatchEvent(new Event(PEOPLE_CHANGED_EVENT));
     }
 
     /* Events */
     private function loadCompleteHandler(e:Event):void {
-        var personsService:PeopleService = e.currentTarget as PeopleService;
-        persons = personsService.people;
+        var peopleService:PeopleService = e.currentTarget as PeopleService;
+        people = peopleService.people;
     }
 
     /* Functions */
     private function commitProperties():void{
-        if(personsChanged){
-            personsChanged = false;
+        if(peopleChanged){
+            peopleChanged = false;
         }
     }
 
-    public function loadPersons(billId:String):void{
-        var personsService:PeopleService = new PeopleService();
-        personsService.addEventListener(Event.COMPLETE, loadCompleteHandler);
-        personsService.load(billId);
+    public function loadPeople(billId:String):void{
+        var peopleService:PeopleService = new PeopleService();
+        peopleService.addEventListener(Event.COMPLETE, loadCompleteHandler);
+        peopleService.load(billId);
     }
 
     public function addPerson(personVO:PersonVO):void{
-        _persons.push(personVO);
-        dispatchEvent(new Event(PeopleCollection.PERSONS_CHANGED_EVENT));
+        _people.push(personVO);
+        dispatchEvent(new Event(PeopleCollection.PEOPLE_CHANGED_EVENT));
     }
 
-    public function writePersons(billId:String):void{
-        var personsService:PeopleService = new PeopleService();
-        personsService.people = persons;
-        personsService.write(billId);
+    public function writePeople(billId:String):void{
+        var peopleService:PeopleService = new PeopleService();
+        peopleService.people = people;
+        peopleService.write(billId);
     }
 }
 }

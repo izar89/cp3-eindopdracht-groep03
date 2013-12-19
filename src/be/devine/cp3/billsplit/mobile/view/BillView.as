@@ -6,6 +6,7 @@ import be.devine.cp3.billsplit.model.BillsCollection;
 import feathers.controls.Button;
 import feathers.controls.Label;
 import feathers.controls.PanelScreen;
+import feathers.controls.ScrollContainer;
 import feathers.controls.TextInput;
 import flash.events.Event;
 import flash.globalization.DateTimeFormatter;
@@ -73,8 +74,13 @@ public class BillView extends PanelScreen{
 
     /* Functions */
     private function init():void{
+        /* Header */
         headerProperties.title = 'Add Bill';
 
+        /* Footer */
+        footerFactory = customFooterFactory;
+
+        /* Buttons */
         backBtn = new Button();
         backBtn.label = '< Back';
         backBtn.addEventListener(starling.events.Event.TRIGGERED, backBtnTriggeredHandler);
@@ -86,7 +92,7 @@ public class BillView extends PanelScreen{
         splitButtons.y = 10;
         addChild(splitButtons);
 
-        // Textfield Labels
+        /* Labels */
         txtNameLabel = new Label();
         txtNameLabel.text = "Bill Name";
         addChild(txtNameLabel);
@@ -95,7 +101,7 @@ public class BillView extends PanelScreen{
         txtTotalLabel.text = "Total Price";
         addChild(txtTotalLabel);
 
-        // Textfields
+        /* Textfields */
         txtName = new TextInput();
         txtName.maxChars = 16;
         //input.restrict = "0-9";
@@ -105,12 +111,22 @@ public class BillView extends PanelScreen{
         txtTotal.maxChars = 16;
         txtTotal.restrict = "0-9\\,";
         addChild(txtTotal);
+    }
+
+    private function customFooterFactory():ScrollContainer{
+        var container:ScrollContainer = new ScrollContainer();
+        container.nameList.add( ScrollContainer.ALTERNATE_NAME_TOOLBAR );
+        container.horizontalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
+        container.verticalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
 
         // Button
         submitBtn = new Button();
         submitBtn.label = 'Add bill';
         submitBtn.addEventListener(starling.events.Event.TRIGGERED, submitBtnTriggeredHandler);
-        addChild(submitBtn);
+        submitBtn.width = 100;
+        container.addChild(submitBtn);
+
+        return container;
     }
 
     private function createNewBillModel():BillModel{
@@ -129,16 +145,12 @@ public class BillView extends PanelScreen{
     private function resize():void{
         txtName.setSize(stage.stageWidth, txtName.minHeight);
         txtTotal.setSize(stage.stageWidth, txtTotal.minHeight);
-        submitBtn.setSize(stage.stageWidth, submitBtn.minHeight);
         txtNameLabel.y = splitButtons.y + splitButtons.height + 10;
         txtNameLabel.x = 20;
         txtName.y = txtNameLabel.y + 30;
         txtTotalLabel.y = txtName.y + txtName.height + 10;
         txtTotalLabel.x = 20;
         txtTotal.y = txtTotalLabel.y + 30;
-        submitBtn.y = txtTotal.height + txtTotal.y + 50;
-        submitBtn.width = 400;
-        submitBtn.x = (stage.stageWidth - submitBtn.width) / 2;
     }
 }
 }

@@ -22,27 +22,26 @@ public class BillSplitView extends PanelScreen{
 
     public static const ADDPERSONVIEW:String = "addPersonView";
 
-    private var personsCollection:PeopleCollection;
+    private var peopleCollection:PeopleCollection;
     private var billsCollection:BillsCollection;
 
+    private var arrPeople:Array;
+
+    private var peopleList:List;
     private var saveBtn:Button;
     private var addPersonBtn:Button;
-
-    private var personsList:List;
-
     private var totalTxt:Label;
     private var billTotal:Number;
     private var rest:Number;
 
     public function BillSplitView() {
-
-        personsCollection = PeopleCollection.getInstance();
+        peopleCollection = PeopleCollection.getInstance();
         billsCollection = BillsCollection.getInstance();
 
         /* Header */
         headerProperties.title = billsCollection.currentBill.name;
 
-        billTotal = billsCollection.currentBill.total;
+        splitBill();
 
         saveBtn = new Button();
         saveBtn.label = 'Save';
@@ -53,20 +52,70 @@ public class BillSplitView extends PanelScreen{
         footerFactory = customFooterFactory;
 
         /* List */
-        personsList = new List();
-        personsList.itemRendererFactory = function():IListItemRenderer{
+        peopleList = new List();
+        peopleList.itemRendererFactory = function():IListItemRenderer{
             var renderer:SwipeListItemRenderer = new SwipeListItemRenderer();
             return renderer;
         };
-        personsList.addEventListener(Event.CHANGE, personsListChangeHandler);
-        personsList.addEventListener('edit', editPersonHandler);
-        personsList.addEventListener('delete', deletePersonHandler);
-        addChild(personsList);
+        peopleList.addEventListener(Event.CHANGE, peopleListChangeHandler);
+        addChild(peopleList);
 
-        personsCollection.loadPersons(billsCollection.currentBill.id);
+        peopleCollection.loadPeople(billsCollection.currentBill.id);
         addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 
+        display();
+    }
 
+    /* Starling events */
+    private function addedToStageHandler(e:Event):void {
+        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+        stage.addEventListener(Event.RESIZE, resizeHandler);
+        resize();
+    }
+
+    private function resizeHandler(e:Event):void {
+        resize();
+    }
+
+    private function addPersonBtnTriggeredHandler(e:Event):void {
+        dispatchEventWith(ADDPERSONVIEW, false);
+    }
+
+    private function peopleListChangeHandler(e:Event):void {
+        trace(peopleList.selectedItem as PersonVO); //TODO
+    }
+
+    private function saveButtonTriggeredHandler(e:Event):void {
+        dispatchEventWith(Application.BILLSVIEW);
+    }
+
+    /* Functions */
+    private function customFooterFactory():ScrollContainer{
+        var container:ScrollContainer = new ScrollContainer();
+        container.nameList.add( ScrollContainer.ALTERNATE_NAME_TOOLBAR );
+        container.horizontalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
+        container.verticalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
+
+        addPersonBtn = new Button;
+        addPersonBtn.label = "Add Person";
+        addPersonBtn.addEventListener(Event.TRIGGERED, addPersonBtnTriggeredHandler);
+        container.addChild(addPersonBtn);
+
+        billTotal = billsCollection.currentBill.total;
+        totalTxt = new Label();
+        trace("[BillSplitView] rest: " + rest);
+        totalTxt.text = "Total: " + billTotal + " / Rest: " + rest;
+        container.addChild(totalTxt);
+
+        return container;
+    }
+
+    private function pushPeople():void {
+        arrPeople = [];
+
+    }
+
+    private function  splitBill():void {
         // arr with all people
         var arrPeople:Array = ["name 1", "name 2", "name 3"];
         // arr with all people.amount
@@ -89,75 +138,17 @@ public class BillSplitView extends PanelScreen{
                 break;
             default:
                 rest = SplitService.shared(billTotal,arrPeople);
-            break;
+                break;
         }
-
-        display();
     }
 
-    /* Starling events */
-    private function addedToStageHandler(e:Event):void {
-        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-        stage.addEventListener(Event.RESIZE, resizeHandler);
-        resize();
-    }
-
-    private function resizeHandler(e:Event):void {
-        resize();
-    }
-
-    private function addPersonBtnTriggeredHandler(e:Event):void {
-        dispatchEventWith(ADDPERSONVIEW, false);
-    }
-
-    private function personsListChangeHandler(e:Event):void {
-        trace(personsList.selectedItem as PersonVO); //TODO
-    }
-
-    private function saveButtonTriggeredHandler(e:Event):void {
-        dispatchEventWith(Application.BILLSVIEW);
-    }
-
-    /* Functions */
-    private function customFooterFactory():ScrollContainer{
-        var container:ScrollContainer = new ScrollContainer();
-        container.nameList.add( ScrollContainer.ALTERNATE_NAME_TOOLBAR );
-        container.horizontalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
-        container.verticalScrollPolicy = ScrollContainer.SCROLL_POLICY_OFF;
-
-        addPersonBtn = new Button;
-        addPersonBtn.label = "Add Person";
-        addPersonBtn.addEventListener(Event.TRIGGERED, addPersonBtnTriggeredHandler);
-        container.addChild(addPersonBtn);
-
-        totalTxt = new Label();
-        trace("[BillSplitView] rest: " + rest);
-        totalTxt.text = "Total: " + billTotal + " / Rest: " + rest;
-        totalTxt.x = 50;
-        container.addChild(totalTxt);
-
-        return container;
-    }
 
     private function display():void{
-        personsList.dataProvider = new ListCollection(personsCollection.persons);
+        peopleList.dataProvider = new ListCollection(peopleCollection.people);
     }
 
     private function resize():void{
-        personsList.setSize(stage.stageWidth, stage.stageHeight);
-    }
-
-    private function editPersonHandler(e:Event):void {
-        trace('edit');
-    }
-
-    private function deletePersonHandler(e:Event):void {
-        trace('delete');
-
-        // billsModel.deleteBill(e.currentTarget as BillVO);
-        //removeChild(e.currentTarget as SwipeListItemRenderer);
-
-        trace(personsList.numChildren);
+        peopleList.setSize(stage.stageWidth, stage.stageHeight);
     }
 
 }}
