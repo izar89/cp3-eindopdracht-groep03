@@ -83,13 +83,14 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
                     break;
                 case TouchPhase.ENDED:
 
-                    this.isSelected = true;
+                    isSelected = true;
 
                     var containerTween:Tween = new Tween(currentTarget,.7, Transitions.EASE_OUT);
 
                     if(currentTarget.x >= 75){ // EDIT
 
                         var editTween:Tween = new Tween(editIcon,.7, Transitions.EASE_OUT);
+                        trace("1: " + isSelected);
                         editTween.onComplete = editTweenOnCompleteHandler;
                         containerTween.animate("x", 480);
                         editTween.animate("alpha", 0);
@@ -189,7 +190,7 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
     override protected function commitData():void{
         if(this._data){
-            label.text = this._data.toString();
+            label.text = this._data.name;
         } else {
             label.text = null;
         }
@@ -197,6 +198,7 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
     private function editTweenOnCompleteHandler():void{
         dispatchEventWith(EDIT, true);
+        trace("2: " + isSelected);
     }
 
     private function deleteTweenOnCompleteHandler():void{

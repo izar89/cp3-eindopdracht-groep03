@@ -1,7 +1,6 @@
 package be.devine.cp3.billsplit.model {
 
 import be.devine.cp3.billsplit.model.service.BillsService;
-import be.devine.cp3.billsplit.vo.BillVO;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 
@@ -12,9 +11,9 @@ public class BillsCollection extends EventDispatcher{
 
     private static var instance:BillsCollection;
 
-    private var _bills:Vector.<BillVO>;
+    private var _bills:Vector.<BillModel>;
     private var billsChanged:Boolean;
-    private var _currentBill:BillVO;
+    private var _currentBill:BillModel;
     private var currentBillChanged:Boolean;
 
     /* Constructor */
@@ -33,10 +32,10 @@ public class BillsCollection extends EventDispatcher{
 
     /* Getters & setters */
     [Bindable(event="billsChanged")]
-    public function get bills():Vector.<BillVO> {
+    public function get bills():Vector.<BillModel> {
         return _bills;
     }
-    public function set bills(value:Vector.<BillVO>):void {
+    public function set bills(value:Vector.<BillModel>):void {
         if (_bills == value) return;
         billsChanged = true;
         _bills = value;
@@ -45,11 +44,11 @@ public class BillsCollection extends EventDispatcher{
     }
 
     [Bindable(event="currentBillChanged")]
-    public function get currentBill():BillVO {
+    public function get currentBill():BillModel {
         return _currentBill;
     }
 
-    public function set currentBill(value:BillVO):void {
+    public function set currentBill(value:BillModel):void {
         if (_currentBill == value) return;
         currentBillChanged = true;
         _currentBill = value;
@@ -64,7 +63,7 @@ public class BillsCollection extends EventDispatcher{
     }
 
     /* Functions */
-    private function commitProperties():void{ //TODO: delete?
+    private function commitProperties():void{
         if(billsChanged){
             billsChanged = false;
         }
@@ -79,7 +78,12 @@ public class BillsCollection extends EventDispatcher{
         billService.load();
     }
 
-    public function deleteBill(billVO:BillVO):void{
+    public function writeBill():void{
+        var billService:BillsService = new BillsService();
+        billService.writeBill(currentBill);
+    }
+
+    public function deleteBill(billVO:BillModel):void{
         var i:int = bills.indexOf(billVO);
         bills.splice(i, 1);
     }

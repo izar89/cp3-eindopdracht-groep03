@@ -1,5 +1,7 @@
 package be.devine.cp3.billsplit.mobile.view {
 import be.devine.cp3.billsplit.model.BillModel;
+import be.devine.cp3.billsplit.model.BillsCollection;
+import be.devine.cp3.billsplit.model.BillsCollection;
 
 import feathers.controls.LayoutGroup;
 import feathers.layout.HorizontalLayout;
@@ -22,7 +24,8 @@ public class SplitButtons extends Sprite {
     [Embed(source="/../assets/images/custom/custom.xml", mimeType="application/octet-stream")]
     protected static const ATLAS_XML:Class;
 
-    private var billModel:BillModel;
+
+    private var billsCollection:BillsCollection;
 
     private var buttonGroup:LayoutGroup;
     private var textureAtlas:TextureAtlas;
@@ -34,7 +37,7 @@ public class SplitButtons extends Sprite {
 
     public function SplitButtons() {
 
-        billModel = BillModel.getInstance();
+        billsCollection = BillsCollection.getInstance();
 
         const atlasBitmapData:BitmapData = (new ATLAS_IMAGE()).bitmapData;
         textureAtlas = new TextureAtlas(Texture.fromBitmapData(atlasBitmapData, false), XML(new ATLAS_XML()));
@@ -66,27 +69,27 @@ public class SplitButtons extends Sprite {
         sharedBtn.addEventListener(starling.events.Event.TRIGGERED, sharedBtnTriggeredHandler);
         percentBtn.addEventListener(starling.events.Event.TRIGGERED, percentBtnTriggeredHandler);
 
-        billModel.addEventListener(BillModel.CURRENTBILLTYPE_CHANGED_EVENT, currentBillTypeChangedHandler);
+        //billsCollection.currentBill.addEventListener(BillModel.BILLTYPE_CHANGED_EVENT, billTypeChangedHandler);
     }
 
     private function ownpriceBtnTriggeredHandler(e:starling.events.Event):void {
-        billModel.currentBillType = "ownprice";
+        billsCollection.currentBill.billType = "ownprice";
     }
 
     private function sharedBtnTriggeredHandler(e:starling.events.Event):void {
-        billModel.currentBillType = "shared";
+        billsCollection.currentBill.billType = "shared";
     }
 
     private function percentBtnTriggeredHandler(e:starling.events.Event):void {
-        billModel.currentBillType = "percentage";
+        billsCollection.currentBill.billType = "percentage";
     }
 
-    private function currentBillTypeChangedHandler(e:flash.events.Event):void {
+    private function billTypeChangedHandler(e:flash.events.Event):void {
         setSplitBtnIcons();
     }
 
-    private function setSplitBtnIcons():void{
-        switch (billModel.currentBillType){
+    public function setSplitBtnIcons():void{
+        switch (billsCollection.currentBill.billType){
             case "ownprice":
                 ownpriceBtn.defaultIcon = new Image(textureAtlas.getTexture("ownprice_active"));
                 sharedBtn.defaultIcon = new Image(textureAtlas.getTexture("shared"));

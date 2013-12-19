@@ -1,7 +1,7 @@
 package be.devine.cp3.billsplit.model.service {
 
-import be.devine.cp3.billsplit.factory.BillVOFactory;
-import be.devine.cp3.billsplit.vo.BillVO;
+import be.devine.cp3.billsplit.factory.BillModelFactory;
+import be.devine.cp3.billsplit.model.BillModel;
 import flash.events.Event;
 import flash.events.EventDispatcher;
 import flash.filesystem.File;
@@ -12,7 +12,7 @@ public class BillsService extends EventDispatcher{
 
     private var file:File;
     private var fileStream:FileStream;
-    public var bills:Vector.<BillVO>;
+    public var bills:Vector.<BillModel>;
 
     public function BillsService() {
         file = File.applicationStorageDirectory.resolvePath('bills.json');
@@ -21,7 +21,7 @@ public class BillsService extends EventDispatcher{
 
     /* Functions */
     public function load():void{
-        var bills:Vector.<BillVO> = new Vector.<BillVO>();
+        var bills:Vector.<BillModel> = new Vector.<BillModel>();
 
         if(file.exists){
             fileStream.open(file, FileMode.READ);
@@ -31,7 +31,7 @@ public class BillsService extends EventDispatcher{
             var jsonObject:Object = JSON.parse(fileContents);
 
             for each(var bill:Object in jsonObject){
-                bills.push(BillVOFactory.createBillVOFromObject(bill));
+                bills.push(BillModelFactory.createBillModelFromObject(bill));
             }
         }
 
@@ -45,20 +45,14 @@ public class BillsService extends EventDispatcher{
         fileStream.close();
     }
 
-    public function addBill(newBill:BillVO):void{
-        load();
-        bills.push(newBill);
-        write();
-    }
-
-    public function editBill(editBill:BillVO):void{
+    public function writeBill(bill:BillModel):void{
         load();
         for(var i:uint = 0 ; i < bills.length ; i++){
-            if(bills[i].id == editBill.id){
+            if(bills[i].id == bill.id){
                 bills.splice(i, 1);
             }
         }
-        bills.push(editBill);
+        bills.push(bill);
         write();
     }
 }

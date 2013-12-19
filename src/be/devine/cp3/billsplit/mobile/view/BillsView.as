@@ -1,11 +1,9 @@
 package be.devine.cp3.billsplit.mobile.view {
 
-import be.devine.cp3.billsplit.Application;
-import be.devine.cp3.billsplit.Application;
-import be.devine.cp3.billsplit.Application;
-import be.devine.cp3.billsplit.model.BillsCollection;
-import be.devine.cp3.billsplit.vo.BillVO;
 
+import be.devine.cp3.billsplit.Application;
+import be.devine.cp3.billsplit.model.BillModel;
+import be.devine.cp3.billsplit.model.BillsCollection;
 import feathers.controls.Button;
 import feathers.controls.List;
 import feathers.controls.PanelScreen;
@@ -65,17 +63,17 @@ public class BillsView extends PanelScreen{
     }
 
     private function selectBillHandler(e:Event):void {
-        billsCollection.currentBill = billsList.selectedItem as BillVO;
+        billsCollection.currentBill = billsList.selectedItem as BillModel;
         dispatchEventWith(Application.BILLSPLITVIEW, false);
     }
 
     private function editBillHandler(e:Event):void {
-        billsCollection.currentBill = billsList.selectedItem as BillVO;
+        billsCollection.currentBill = billsList.selectedItem as BillModel;
         dispatchEventWith(Application.BILLVIEW, false);
     }
 
     private function deleteBillHandler(e:Event):void {
-        billsCollection.deleteBill(billsList.selectedItem as BillVO);
+        billsCollection.deleteBill(billsList.selectedItem as BillModel);
         display();
     }
 
@@ -99,7 +97,6 @@ public class BillsView extends PanelScreen{
     }
 
     private function resize():void{
-        trace('resize billsview');
         billsList.setSize(stage.stageWidth, stage.stageHeight);
     }
 }

@@ -1,5 +1,6 @@
 package be.devine.cp3.billsplit.vo {
 
+/*
 public class BillVO {
 
     public var id:String;
@@ -10,4 +11,5 @@ public class BillVO {
     public function toString():String{
         return name;
     }
-}}
+}
+*/}

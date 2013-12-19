@@ -2,16 +2,14 @@
         {
             "id":"1",
             "name":"Bill 1",
-            "created":"",
-            "updated":"",
-            "total":""
+            "total":"",
+            "billType": "ownprice"
 
         },{
             "id":"2",
             "name":"Bill 2",
-            "created":"",
-            "updated":"",
-            "total":""
+            "total":"",
+            "billType": "ownprice"
         }
 ]
 
