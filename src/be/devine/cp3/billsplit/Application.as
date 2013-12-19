@@ -10,14 +10,12 @@ import feathers.controls.ScreenNavigatorItem;
 import feathers.motion.transitions.ScreenSlidingStackTransitionManager;
 import feathers.themes.MinimalMobileTheme;
 
-import starling.events.Event;
-
 public class Application extends ScreenNavigator{
 
-    private static const BILLSVIEW:String = "billsView";
-    private static const BILLVIEW:String = "billView";
-    private static const BILLSPLITVIEW:String = "billSplitView";
-    private static const ADDPERSONVIEW:String = "addPersonView";
+    public static const BILLSVIEW:String = "billsView";
+    public static const BILLVIEW:String = "billView";
+    public static const BILLSPLITVIEW:String = "billSplitView";
+    public static const ADDPERSONVIEW:String = "addPersonView";
 
     private var transitionManager:ScreenSlidingStackTransitionManager;
 
@@ -29,15 +27,15 @@ public class Application extends ScreenNavigator{
             billView: BILLVIEW
         }));
         addScreen(BILLVIEW, new ScreenNavigatorItem(BillView, {
-            complete: BILLSPLITVIEW,
+            billSplitView: BILLSPLITVIEW,
             billsView: BILLSVIEW
         }));
         addScreen(BILLSPLITVIEW, new ScreenNavigatorItem(BillSplitView, {
-            complete: BILLSVIEW,
+            billsView: BILLSVIEW,
             addPersonView: ADDPERSONVIEW
         }));
         addScreen(ADDPERSONVIEW, new ScreenNavigatorItem(PeopleView, {
-            complete: BILLSPLITVIEW
+            billSplitView: BILLSPLITVIEW
         }));
 
         showScreen(BILLSVIEW);

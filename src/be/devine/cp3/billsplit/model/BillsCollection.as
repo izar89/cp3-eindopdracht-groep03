@@ -20,7 +20,7 @@ public class BillsCollection extends EventDispatcher{
     /* Constructor */
     public function BillsCollection(e:Enforcer) {
         if (e == null) {
-            throw new Error("BillsModel is a singleton, use getInstance() instead");
+            throw new Error("BillsCollection is a singleton, use getInstance() instead");
         }
     }
 
@@ -64,7 +64,7 @@ public class BillsCollection extends EventDispatcher{
     }
 
     /* Functions */
-    private function commitProperties():void{
+    private function commitProperties():void{ //TODO: delete?
         if(billsChanged){
             billsChanged = false;
         }
@@ -79,25 +79,9 @@ public class BillsCollection extends EventDispatcher{
         billService.load();
     }
 
-    public function writeBills():void{
-        var billService:BillsService = new BillsService();
-        billService.bills = bills;
-        billService.write();
-    }
-
-    public function addBill(billVO:BillVO):void{
-        _bills.push(billVO);
-        dispatchEvent(new Event(BillsCollection.BILLS_CHANGED_EVENT));
-    }
-
     public function deleteBill(billVO:BillVO):void{
         var i:int = bills.indexOf(billVO);
         bills.splice(i, 1);
-    }
-
-    public function updateBill(billVO:BillVO):void{
-        var i:int = bills.indexOf(billVO);
-        bills[i] = billVO;
     }
 }
 }

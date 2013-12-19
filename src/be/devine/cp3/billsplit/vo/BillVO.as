@@ -4,8 +4,6 @@ public class BillVO {
 
     public var id:String;
     public var name:String;
-    public var created:Date;
-    public var updated:Date;
     public var total:Number;
     public var billType:String;
 

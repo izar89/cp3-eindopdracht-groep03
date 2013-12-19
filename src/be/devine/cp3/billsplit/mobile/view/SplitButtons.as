@@ -1,16 +1,17 @@
 package be.devine.cp3.billsplit.mobile.view {
+import be.devine.cp3.billsplit.model.BillModel;
+
 import feathers.controls.LayoutGroup;
 import feathers.layout.HorizontalLayout;
 
 import flash.display.BitmapData;
+import flash.events.Event;
 
 import starling.display.Image;
 import starling.display.Sprite;
 import starling.events.Event;
 import starling.textures.Texture;
-
 import feathers.controls.Button;
-
 import starling.textures.TextureAtlas;
 
 public class SplitButtons extends Sprite {
@@ -21,6 +22,8 @@ public class SplitButtons extends Sprite {
     [Embed(source="/../assets/images/custom/custom.xml", mimeType="application/octet-stream")]
     protected static const ATLAS_XML:Class;
 
+    private var billModel:BillModel;
+
     private var buttonGroup:LayoutGroup;
     private var textureAtlas:TextureAtlas;
 
@@ -30,6 +33,8 @@ public class SplitButtons extends Sprite {
 
 
     public function SplitButtons() {
+
+        billModel = BillModel.getInstance();
 
         const atlasBitmapData:BitmapData = (new ATLAS_IMAGE()).bitmapData;
         textureAtlas = new TextureAtlas(Texture.fromBitmapData(atlasBitmapData, false), XML(new ATLAS_XML()));
@@ -57,37 +62,51 @@ public class SplitButtons extends Sprite {
         percentBtn.setSize(150, 75);
         buttonGroup.addChild(percentBtn);
 
-        ownpriceBtn.addEventListener(Event.TRIGGERED, ownpriceBtnTriggeredHandler);
-        sharedBtn.addEventListener(Event.TRIGGERED, sharedBtnTriggeredHandler);
-        percentBtn.addEventListener(Event.TRIGGERED, percentBtnTriggeredHandler);
+        ownpriceBtn.addEventListener(starling.events.Event.TRIGGERED, ownpriceBtnTriggeredHandler);
+        sharedBtn.addEventListener(starling.events.Event.TRIGGERED, sharedBtnTriggeredHandler);
+        percentBtn.addEventListener(starling.events.Event.TRIGGERED, percentBtnTriggeredHandler);
 
+        billModel.addEventListener(BillModel.CURRENTBILLTYPE_CHANGED_EVENT, currentBillTypeChangedHandler);
     }
 
-    private function ownpriceBtnTriggeredHandler(e:Event):void {
-
-        ownpriceBtn.defaultIcon = new Image(textureAtlas.getTexture("ownprice_active"));
-        sharedBtn.defaultIcon = new Image(textureAtlas.getTexture("shared"));
-        percentBtn.defaultIcon = new Image(textureAtlas.getTexture("percentage"));
-
-        dispatchEventWith("ownprice");
-
+    private function ownpriceBtnTriggeredHandler(e:starling.events.Event):void {
+        billModel.currentBillType = "ownprice";
     }
 
-    private function sharedBtnTriggeredHandler(e:Event):void {
-        ownpriceBtn.defaultIcon = new Image(textureAtlas.getTexture("ownprice"));
-        sharedBtn.defaultIcon = new Image(textureAtlas.getTexture("shared_active"));
-        percentBtn.defaultIcon = new Image(textureAtlas.getTexture("percentage"));
-
-        dispatchEventWith("shared");
+    private function sharedBtnTriggeredHandler(e:starling.events.Event):void {
+        billModel.currentBillType = "shared";
     }
 
-    private function percentBtnTriggeredHandler(e:Event):void {
-        ownpriceBtn.defaultIcon = new Image(textureAtlas.getTexture("ownprice"));
-        sharedBtn.defaultIcon = new Image(textureAtlas.getTexture("shared"));
-        percentBtn.defaultIcon = new Image(textureAtlas.getTexture("percentage_active"));
-
-        dispatchEventWith("percentage");
+    private function percentBtnTriggeredHandler(e:starling.events.Event):void {
+        billModel.currentBillType = "percentage";
     }
 
+    private function currentBillTypeChangedHandler(e:flash.events.Event):void {
+        setSplitBtnIcons();
+    }
+
+    private function setSplitBtnIcons():void{
+        switch (billModel.currentBillType){
+            case "ownprice":
+                ownpriceBtn.defaultIcon = new Image(textureAtlas.getTexture("ownprice_active"));
+                sharedBtn.defaultIcon = new Image(textureAtlas.getTexture("shared"));
+                percentBtn.defaultIcon = new Image(textureAtlas.getTexture("percentage"));
+                break;
+            case "shared":
+                ownpriceBtn.defaultIcon = new Image(textureAtlas.getTexture("ownprice"));
+                sharedBtn.defaultIcon = new Image(textureAtlas.getTexture("shared_active"));
+                percentBtn.defaultIcon = new Image(textureAtlas.getTexture("percentage"));
+                break;
+            case "percentage":
+                ownpriceBtn.defaultIcon = new Image(textureAtlas.getTexture("ownprice"));
+                sharedBtn.defaultIcon = new Image(textureAtlas.getTexture("shared"));
+                percentBtn.defaultIcon = new Image(textureAtlas.getTexture("percentage_active"));
+                break;
+        }
+    }
+
+    public function setSize():void{ //TODO
+
+    }
 }
 }

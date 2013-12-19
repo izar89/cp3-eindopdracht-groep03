@@ -1,7 +1,6 @@
 package be.devine.cp3.billsplit.model {
 
 import be.devine.cp3.billsplit.model.service.PeopleService;
-import be.devine.cp3.billsplit.vo.BillVO;
 import be.devine.cp3.billsplit.vo.PersonVO;
 import flash.events.Event;
 import flash.events.EventDispatcher;
@@ -17,7 +16,7 @@ public class PeopleCollection extends EventDispatcher{
     /* Constructor */
     public function PeopleCollection(e:Enforcer) {
         if (e == null) {
-            throw new Error("PersonsModel is a singleton, use getInstance() instead");
+            throw new Error("PeopleCollection is a singleton, use getInstance() instead");
         }
     }
 

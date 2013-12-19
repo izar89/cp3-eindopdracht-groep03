@@ -8,16 +8,16 @@ public class SplitService extends EventDispatcher {
     }
 
     // total bill amount + array all people
-    public function shared(total:Number, people:Array){
+    public function shared(total:Number, people:Array):Number{
 
         var equalprice:Number;
         equalprice = (total / people.length);
 
-        return equalprice.toFixed(2);
+        return equalprice.toFixed(2) as Number;
     }
 
     // total bill amount + array all prices
-    public function ownPrice(total:Number, prices:Array){
+    public function ownPrice(total:Number, prices:Array):Number{
 
         var rest:Number = total;
 
@@ -25,11 +25,11 @@ public class SplitService extends EventDispatcher {
             rest -= price;
         }
 
-        return rest.toFixed(2);
+        return rest.toFixed(2) as Number;
     }
 
     // total bill amount + array all percentages
-    public function percentage(total:Number, percentages:Array){
+    public function percentage(total:Number, percentages:Array):Number{
 
         var rest:Number = total;
 
@@ -37,7 +37,7 @@ public class SplitService extends EventDispatcher {
             rest -= ((total * percentage) / 100);
         }
 
-        return rest.toFixed(2);
+        return rest.toFixed(2) as Number;
     }
 
 }

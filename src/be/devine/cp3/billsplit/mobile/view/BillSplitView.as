@@ -1,5 +1,6 @@
 package be.devine.cp3.billsplit.mobile.view {
 
+import be.devine.cp3.billsplit.Application;
 import be.devine.cp3.billsplit.model.BillsCollection;
 import be.devine.cp3.billsplit.model.PeopleCollection;
 import be.devine.cp3.billsplit.model.service.SplitService;
@@ -117,7 +118,7 @@ public class BillSplitView extends PanelScreen{
     }
 
     private function saveButtonTriggeredHandler(e:Event):void {
-        dispatchEventWith(Event.COMPLETE);
+        dispatchEventWith(Application.BILLSVIEW);
     }
 
     /* Functions */

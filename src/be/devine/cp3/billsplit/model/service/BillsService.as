@@ -39,10 +39,27 @@ public class BillsService extends EventDispatcher{
         dispatchEvent(new Event(Event.COMPLETE));
     }
 
-    public function write():void{
+    private function write():void{
         fileStream.open(file, FileMode.WRITE);
         fileStream.writeUTFBytes(JSON.stringify(bills, null, 4));
         fileStream.close();
+    }
+
+    public function addBill(newBill:BillVO):void{
+        load();
+        bills.push(newBill);
+        write();
+    }
+
+    public function editBill(editBill:BillVO):void{
+        load();
+        for(var i:uint = 0 ; i < bills.length ; i++){
+            if(bills[i].id == editBill.id){
+                bills.splice(i, 1);
+            }
+        }
+        bills.push(editBill);
+        write();
     }
 }
 }

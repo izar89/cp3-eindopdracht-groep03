@@ -1,49 +1,99 @@
 package be.devine.cp3.billsplit.mobile.view {
 
+import be.devine.cp3.billsplit.Application;
+import be.devine.cp3.billsplit.model.BillModel;
 import be.devine.cp3.billsplit.model.BillsCollection;
 import be.devine.cp3.billsplit.vo.BillVO;
 import feathers.controls.Button;
 import feathers.controls.Label;
 import feathers.controls.PanelScreen;
 import feathers.controls.TextInput;
+
+import flash.events.Event;
+import flash.globalization.DateTimeFormatter;
+
 import starling.display.DisplayObject;
 import starling.events.Event;
 
 public class BillView extends PanelScreen{
 
-    public static const BILLSVIEW:String = "billsView";
-
     private var billsCollection:BillsCollection;
+    private var billModel:BillModel;
+
     private var backBtn:Button;
-
     private var splitButtons:SplitButtons;
-
     private var txtNameLabel:Label;
     private var txtTotalLabel:Label;
-
     private var txtName:TextInput;
     private var txtTotal:TextInput;
     private var addBtn:Button;
 
-    private var billType:String;
-
     public function BillView() {
         billsCollection = BillsCollection.getInstance();
+        billModel = BillModel.getInstance();
 
+        init();
+
+        billModel.addEventListener(BillModel.BILL_CHANGED_EVENT, billChangedHandler);
+        if(billsCollection.currentBill){
+            billModel.bill = billsCollection.currentBill;
+        } else {
+            billModel.bill = createNewBillVO();
+        }
+
+        addEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
+    }
+
+    /* Starling events */
+    private function addedToStageHandler(e:starling.events.Event):void {
+        removeEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
+        stage.addEventListener(starling.events.Event.RESIZE, resizeHandler);
+        resize();
+    }
+
+    private function resizeHandler(e:starling.events.Event):void {
+        resize();
+    }
+
+    private function backBtnTriggeredHandler(e:starling.events.Event):void {
+        dispatchEventWith(Application.BILLSVIEW, false);
+    }
+
+    private function addBtnTriggeredHandler(e:starling.events.Event):void {
+
+        if(txtName.text.length > 0 && txtTotal.text.length){
+
+            billsCollection.currentBill = billModel.bill;
+            billModel.bill.name = txtName.text;
+            billModel.bill.total = Number(txtTotal.text);
+            if(!billsCollection.currentBill){ // ADD
+                billModel.addBill();
+                dispatchEventWith(Application.BILLSPLITVIEW);
+            } else {
+                billModel.editBill();
+                dispatchEventWith(Application.BILLSVIEW);
+            }
+        }
+    }
+
+    private function billChangedHandler(e:flash.events.Event):void {
+        txtName.text = billModel.bill.name;
+        txtTotal.text = billModel.bill.total.toString();
+    }
+
+    /* Functions */
+    private function init():void{
         headerProperties.title = 'Add Bill';
 
         backBtn = new Button();
         backBtn.label = '< Back';
-        backBtn.addEventListener(Event.TRIGGERED, backBtnTriggeredHandler);
+        backBtn.addEventListener(starling.events.Event.TRIGGERED, backBtnTriggeredHandler);
         headerProperties.leftItems = new <DisplayObject>[backBtn];
         backButtonHandler = backBtnTriggeredHandler;
 
         splitButtons = new SplitButtons();
         splitButtons.x = 5;
         splitButtons.y = 10;
-        splitButtons.addEventListener("ownprice", ownpriceBillHandler);
-        splitButtons.addEventListener("shared", sharedBillHandler);
-        splitButtons.addEventListener("percentage", percentageBillHandler);
         addChild(splitButtons);
 
         // Textfield Labels
@@ -68,71 +118,24 @@ public class BillView extends PanelScreen{
 
         // Button
         addBtn = new Button();
-
         addBtn.label = 'Add bill';
-        addBtn.addEventListener(Event.TRIGGERED, addBtnTriggeredHandler);
+        addBtn.addEventListener(starling.events.Event.TRIGGERED, addBtnTriggeredHandler);
         addChild(addBtn);
-
-        billsCollection.loadBills();
-        addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
     }
 
-    /* Starling events */
-    private function addedToStageHandler(e:Event):void {
-        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-        stage.addEventListener(Event.RESIZE, resizeHandler);
-        resize();
+    private function createNewBillVO():BillVO{
+        var newBill:BillVO = new BillVO();
+        var date:Date = new Date();
+        var dtf:DateTimeFormatter = new DateTimeFormatter("en-US");
+        dtf.setDateTimePattern("dd/MM/yyyy HH:mm:ss");
+        newBill.id = date.toString();
+        newBill.name = dtf.format(date);
+        newBill.total = 0;
+        newBill.billType = "ownprice";
+
+        return newBill;
     }
 
-    private function resizeHandler(e:Event):void {
-        resize();
-    }
-
-    private function backBtnTriggeredHandler(e:Event):void {
-        dispatchEventWith(BILLSVIEW, false);
-    }
-
-    private function ownpriceBillHandler(e:Event):void {
-        billType = "ownprice";
-    }
-    private function sharedBillHandler(e:Event):void {
-        billType = "shared";
-    }
-    private function percentageBillHandler(e:Event):void {
-        billType = "percentage";
-    }
-
-    private function addBtnTriggeredHandler(e:Event):void {
-
-        if(txtName.text.length > 0){
-            var newBill:BillVO = new BillVO();
-            var date:Date = new Date();
-            newBill.id = date.toString();
-            newBill.name = txtName.text;
-            newBill.created = date;
-            newBill.updated = date;
-            if(txtTotal.text.length == 0){
-                newBill.total = parseFloat("0");
-            }else {
-                newBill.total = parseFloat(txtTotal.text);
-            }
-            if(billType == ""){
-                newBill.billType = billType;
-            }else {
-                newBill.billType = "ownprice"
-            }
-            billsCollection.addBill(newBill);
-            billsCollection.writeBills();
-
-            // TODO: ADD BILL ID TO NEXT VIEW
-            var billID:String = newBill.id;
-            billsCollection.currentBill =  newBill;
-            dispatchEventWith(Event.COMPLETE);
-
-        }
-    }
-
-    /* Functions */
     private function resize():void{
         txtName.setSize(stage.stageWidth, txtName.minHeight);
         txtTotal.setSize(stage.stageWidth, txtTotal.minHeight);
@@ -147,5 +150,7 @@ public class BillView extends PanelScreen{
         addBtn.width = 400;
         addBtn.x = (stage.stageWidth - addBtn.width) / 2;
     }
+
+
 }
 }

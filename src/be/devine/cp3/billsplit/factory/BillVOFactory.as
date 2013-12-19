@@ -6,9 +6,8 @@ public class BillVOFactory {
         var billVO:BillVO = new BillVO();
         billVO.id = bill.id;
         billVO.name = bill.name;
-        billVO.created = bill.created as Date;
-        billVO.updated = bill.updated as Date;
         billVO.total = bill.total;
+        billVO.billType = bill.billType;
         return billVO;
     }
 }

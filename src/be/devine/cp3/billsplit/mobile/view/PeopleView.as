@@ -1,4 +1,5 @@
 package be.devine.cp3.billsplit.mobile.view {
+import be.devine.cp3.billsplit.Application;
 import be.devine.cp3.billsplit.model.BillsCollection;
 import be.devine.cp3.billsplit.model.PeopleCollection;
 import be.devine.cp3.billsplit.vo.PersonVO;
@@ -36,7 +37,7 @@ public class PeopleView extends PanelScreen {
         backBtn.label = '< Back';
         backBtn.addEventListener(Event.TRIGGERED, backBtnTriggeredHandler);
         headerProperties.leftItems = new <DisplayObject>[backBtn];
-       // backButtonHandler = backBtnTriggeredHandler;
+        backButtonHandler = backBtnTriggeredHandler;
 
         // Textfield Labels
         txtNameLabel = new Label();
@@ -74,7 +75,6 @@ public class PeopleView extends PanelScreen {
 
         // Button
         addBtn = new Button();
-
         addBtn.label = 'Add Person';
         addBtn.addEventListener(Event.TRIGGERED, addPersonTriggeredHandler);
         addChild(addBtn);
@@ -95,7 +95,7 @@ public class PeopleView extends PanelScreen {
     }
 
     private function backBtnTriggeredHandler(e:Event):void {
-        dispatchEventWith(Event.COMPLETE);
+        dispatchEventWith(Application.BILLSPLITVIEW);
     }
 
     private function addPersonTriggeredHandler(e:Event):void {
@@ -113,9 +113,8 @@ public class PeopleView extends PanelScreen {
             }
             personsModel.addPerson(newPerson);
             personsModel.writePersons(billsModel.currentBill.id);
-            dispatchEventWith(Event.COMPLETE);
+            dispatchEventWith(Application.BILLSPLITVIEW);
         }
-
     }
 
     /* Functions */

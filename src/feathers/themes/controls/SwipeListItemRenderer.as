@@ -4,6 +4,8 @@ import feathers.controls.Label;
 import feathers.controls.ScrollContainer;
 import feathers.controls.renderers.LayoutGroupListItemRenderer;
 import feathers.events.FeathersEventType;
+import feathers.layout.AnchorLayout;
+import feathers.layout.AnchorLayoutData;
 
 import flash.utils.ByteArray;
 
@@ -81,16 +83,14 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
                     break;
                 case TouchPhase.ENDED:
 
-                    var containerTween:Tween = new Tween(currentTarget,.7, Transitions.EASE_OUT);
-                    var editTween:Tween = new Tween(editIcon,.7, Transitions.EASE_OUT);
-                    editTween.onComplete = editTweenOnCompleteHandler;
-                    var deleteTween:Tween = new Tween(deleteIcon,.7, Transitions.EASE_OUT);
-                    deleteTween.onComplete = deleteTweenOnCompleteHandler;
-
                     this.isSelected = true;
+
+                    var containerTween:Tween = new Tween(currentTarget,.7, Transitions.EASE_OUT);
 
                     if(currentTarget.x >= 75){ // EDIT
 
+                        var editTween:Tween = new Tween(editIcon,.7, Transitions.EASE_OUT);
+                        editTween.onComplete = editTweenOnCompleteHandler;
                         containerTween.animate("x", 480);
                         editTween.animate("alpha", 0);
                         editTween.animate("x", 405);
@@ -99,13 +99,15 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
                     } else if(currentTarget.x <= -75){ // DELETE
 
+                        var deleteTween:Tween = new Tween(deleteIcon,.7, Transitions.EASE_OUT);
+                        deleteTween.onComplete = deleteTweenOnCompleteHandler;
                         containerTween.animate("x", -480);
                         deleteTween.animate("x", 0);
                         deleteTween.animate("alpha", 0);
                         Starling.juggler.add(containerTween);
                         Starling.juggler.add(deleteTween);
 
-                    } else if(currentTarget.x >= -5 && currentTarget.x <= 5){
+                    } else if(currentTarget.x >= -5 && currentTarget.x <= 5){ // SELECT
                         // select item
                         dispatchEventWith(SELECT, true);
                     } else {
@@ -193,11 +195,11 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
         }
     }
 
-    private function editTweenOnCompleteHandler(){
+    private function editTweenOnCompleteHandler():void{
         dispatchEventWith(EDIT, true);
     }
 
-    private function deleteTweenOnCompleteHandler(){
+    private function deleteTweenOnCompleteHandler():void{
         dispatchEventWith(DELETE, true);
     }
 }
