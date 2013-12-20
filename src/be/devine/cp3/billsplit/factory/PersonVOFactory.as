@@ -7,7 +7,7 @@ public class PersonVOFactory {
         personVO.id = person.id;
         personVO.billId = person.billId;
         personVO.name = person.name;
-        personVO.amount = person.amount;
+        personVO.total = person.total;
         return personVO;
     }
 }

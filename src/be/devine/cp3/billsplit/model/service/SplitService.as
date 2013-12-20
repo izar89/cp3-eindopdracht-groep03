@@ -5,8 +5,13 @@ public class SplitService {
     // total bill amount + array all people
     public static function shared(total:Number, people:Array):Number{
         var equalprice:Number;
-        equalprice = (total / people.length);
-        return equalprice.toFixed(2) as Number;
+        if(people.length == 0){
+             equalprice = total;
+        } else {
+            equalprice = (total / people.length);
+        }
+
+        return Math.round(equalprice*100)/100;
     }
 
     // total bill amount + array all prices
@@ -15,16 +20,19 @@ public class SplitService {
         for each(var price:Number in prices){
             rest -= price;
         }
-        return rest.toFixed(2) as Number;
+
+        return Math.round(rest*100)/100;
     }
 
     // total bill amount + array all percentages
     public static function percentage(total:Number, percentages:Array):Number{
         var rest:Number = total;
+
         for each(var percentage:Number in percentages){
             rest -= ((total * percentage) / 100);
         }
-        return rest.toFixed(2) as Number;
+
+        return Math.round(rest*100)/100;
     }
 }
 }

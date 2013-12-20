@@ -4,9 +4,9 @@ public class PersonVO {
     public var id:String;
     public var billId:String;
     public var name:String;
-    public var amount:Number;
+    public var total:Number;
 
     public function toString():String{
-        return name + ": $" + amount;
+        return name + "/" + total + " euro";
     }
 }}

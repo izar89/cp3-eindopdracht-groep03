@@ -1,5 +1,7 @@
 package feathers.themes.controls {
 
+import be.devine.cp3.billsplit.model.BillsCollection;
+
 import feathers.controls.Label;
 import feathers.controls.ScrollContainer;
 import feathers.controls.renderers.LayoutGroupListItemRenderer;
@@ -190,7 +192,7 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
     override protected function commitData():void{
         if(this._data){
-            label.text = this._data.name;
+            label.text = this._data.name + " / " + this._data.total + " euro";
         } else {
             label.text = null;
         }

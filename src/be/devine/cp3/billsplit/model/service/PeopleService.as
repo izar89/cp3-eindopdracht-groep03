@@ -48,6 +48,20 @@ public class PeopleService extends EventDispatcher{
         dispatchEvent(new Event(Event.COMPLETE));
     }
 
+    private function deletePersonById(id:String):void{
+        for(var i:uint = 0 ; i < people.length ; i++){
+            if(people[i].id == id){
+                people.splice(i, 1);
+            }
+        }
+    }
+
+    public function deletePerson(personID:String, billID:String):void{
+        load(billID);
+        deletePersonById(personID);
+        write(billID);
+    }
+
     public function write(billId:String):void{
         var jsonObject:Object = readAndParseJson();
 

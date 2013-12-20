@@ -1,8 +1,3 @@
-/**
- * User: Stijn Heylen
- * Date: 19/12/13
- * Time: 12:35
- */
 package be.devine.cp3.billsplit.model {
 import flash.events.Event;
 import flash.events.EventDispatcher;

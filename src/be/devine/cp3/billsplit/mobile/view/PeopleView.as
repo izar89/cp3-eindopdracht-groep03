@@ -8,13 +8,16 @@ import feathers.controls.Button;
 import feathers.controls.Label;
 import feathers.controls.PanelScreen;
 import feathers.controls.TextInput;
+
+import flash.events.Event;
+
 import starling.display.DisplayObject;
 import starling.events.Event;
 
 public class PeopleView extends PanelScreen {
 
-    private var personsModel:PeopleCollection;
-    private var billsModel:BillsCollection;
+    private var peopleCollection:PeopleCollection;
+    private var billsCollection:BillsCollection;
 
     private var backBtn:Button;
 
@@ -26,44 +29,64 @@ public class PeopleView extends PanelScreen {
     private var addBtn:Button;
 
     public function PeopleView() {
-        personsModel = PeopleCollection.getInstance();
-        billsModel = BillsCollection.getInstance();
+        peopleCollection = PeopleCollection.getInstance();
+        billsCollection = BillsCollection.getInstance();
 
         init();
 
-        addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+        billsCollection.addEventListener(PeopleCollection.CURRENTPERSON_CHANGED_EVENT, currentPersonChangedHandler);
+        currentPersonChangedHandler();
+
+        addEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
     }
 
     /* Events */
-    private function addedToStageHandler(e:Event):void {
-        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-        stage.addEventListener(Event.RESIZE, resizeHandler);
+    private function addedToStageHandler(e:starling.events.Event):void {
+        removeEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
+        stage.addEventListener(starling.events.Event.RESIZE, resizeHandler);
         resize();
     }
 
-    private function resizeHandler(e:Event):void {
+    private function resizeHandler(e:starling.events.Event):void {
         resize();
     }
 
-    private function backBtnTriggeredHandler(e:Event):void {
+    private function backBtnTriggeredHandler(e:starling.events.Event):void {
         dispatchEventWith(Application.BILLSPLITVIEW);
     }
 
-    private function addPersonTriggeredHandler(e:Event):void {
+    private function currentPersonChangedHandler(e:flash.events.Event = null):void {
+        if(peopleCollection.currentPerson){
+            txtName.text = peopleCollection.currentPerson.name;
+            txtPrice.text = peopleCollection.currentPerson.total.toString();
+        }
+    }
+
+    private function addPersonTriggeredHandler(e:starling.events.Event):void {
 
         if(txtName.text.length > 0){
-            var newPerson:PersonVO = new PersonVO();
-            var date:Date = new Date();
-            newPerson.id = date.toString();
-            newPerson.name = txtName.text;
-            newPerson.billId = billsModel.currentBill.id;
-            if(txtPrice.text.length == 0 ){
-                newPerson.amount = parseFloat("0");
+
+            if(peopleCollection.currentPerson){
+                peopleCollection.currentPerson.name = txtName.text;
+                peopleCollection.currentPerson.total = Number(txtPrice.text);
+
+                peopleCollection.writePeople(billsCollection.currentBill.id);
+
             }else {
-                newPerson.amount = parseFloat(txtPrice.text);
+                var newPerson:PersonVO = new PersonVO();
+                var date:Date = new Date();
+                newPerson.id = date.toString();
+                newPerson.name = txtName.text;
+                newPerson.billId = billsCollection.currentBill.id;
+                if(txtPrice.text.length == 0 ){
+                    newPerson.total = parseFloat("0");
+                }else {
+                    newPerson.total = parseFloat(txtPrice.text);
+                }
+                peopleCollection.addPerson(newPerson);
+                peopleCollection.writePeople(billsCollection.currentBill.id);
             }
-            personsModel.addPerson(newPerson);
-            personsModel.writePeople(billsModel.currentBill.id);
+
             dispatchEventWith(Application.BILLSPLITVIEW);
         }
     }
@@ -74,7 +97,7 @@ public class PeopleView extends PanelScreen {
 
         backBtn = new Button();
         backBtn.label = '< Back';
-        backBtn.addEventListener(Event.TRIGGERED, backBtnTriggeredHandler);
+        backBtn.addEventListener(starling.events.Event.TRIGGERED, backBtnTriggeredHandler);
         headerProperties.leftItems = new <DisplayObject>[backBtn];
         backButtonHandler = backBtnTriggeredHandler;
 
@@ -85,37 +108,42 @@ public class PeopleView extends PanelScreen {
 
         txtPriceLabel = new Label();
 
-        switch(billsModel.currentBill.billType){
-            case "shared":
-                txtPriceLabel.text = "Shared Price";
-                break;
-            case "ownprice":
-                txtPriceLabel.text = "Your own Price";
-                break;
-            case "percentage":
-                txtPriceLabel.text = "Percentage";
-                break;
-            default:
-                txtPriceLabel.text = "Price";
-                break;
-        }
-        addChild(txtPriceLabel);
-
         // Textfields
         txtName = new TextInput();
         txtName.maxChars = 16;
         addChild(txtName);
 
-        txtPrice = new TextInput();
-        txtPrice.maxChars = 16;
-        txtPrice.restrict = "0-9\\,";
-        addChild(txtPrice);
+        switch(billsCollection.currentBill.billType){
+            case "shared":
+                txtPriceLabel.text = "Shared Price";
+                txtPrice = new TextInput();
+            break;
+            case "ownprice":
+                txtPriceLabel.text = "Your own Price";
+                priceInput();
+                break;
+            case "percentage":
+                txtPriceLabel.text = "Percentage";
+                priceInput();
+                break;
+            default:
+                break;
+        }
 
         // Button
         addBtn = new Button();
         addBtn.label = 'Add Person';
-        addBtn.addEventListener(Event.TRIGGERED, addPersonTriggeredHandler);
+        addBtn.addEventListener(starling.events.Event.TRIGGERED, addPersonTriggeredHandler);
         addChild(addBtn);
+    }
+
+    private function priceInput():void {
+        addChild(txtPriceLabel);
+
+        txtPrice = new TextInput();
+        txtPrice.maxChars = 16;
+        txtPrice.restrict = "0-9\\,";
+        addChild(txtPrice);
     }
 
     private function resize():void{
@@ -128,7 +156,11 @@ public class PeopleView extends PanelScreen {
         txtPriceLabel.y = txtName.y + txtName.height + 10;
         txtPriceLabel.x = 20;
         txtPrice.y = txtPriceLabel.y + 30;
-        addBtn.y = txtPrice.height + txtPrice.y + 50;
+        if(billsCollection.currentBill.billType == "shared"){
+            addBtn.y = txtName.height + txtName.y + 50;
+        } else {
+            addBtn.y = txtPrice.height + txtPrice.y + 50;
+        }
         addBtn.width = 400;
         addBtn.x = (stage.stageWidth - addBtn.width) / 2;
     }

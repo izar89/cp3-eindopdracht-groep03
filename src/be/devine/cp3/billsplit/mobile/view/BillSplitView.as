@@ -1,9 +1,11 @@
 package be.devine.cp3.billsplit.mobile.view {
 
 import be.devine.cp3.billsplit.Application;
+import be.devine.cp3.billsplit.model.BillModel;
 import be.devine.cp3.billsplit.model.BillsCollection;
 import be.devine.cp3.billsplit.model.PeopleCollection;
 import be.devine.cp3.billsplit.model.service.SplitService;
+import be.devine.cp3.billsplit.vo.PersonVO;
 import be.devine.cp3.billsplit.vo.PersonVO;
 
 import feathers.controls.Button;
@@ -26,11 +28,13 @@ public class BillSplitView extends PanelScreen{
     private var billsCollection:BillsCollection;
 
     private var arrPeople:Array;
+    private var arrPrices:Array;
 
     private var peopleList:List;
     private var saveBtn:Button;
     private var addPersonBtn:Button;
     private var totalTxt:Label;
+    private var restTxt:Label;
     private var billTotal:Number;
     private var rest:Number;
 
@@ -58,6 +62,8 @@ public class BillSplitView extends PanelScreen{
             return renderer;
         };
         peopleList.addEventListener(Event.CHANGE, peopleListChangeHandler);
+        peopleList.addEventListener(SwipeListItemRenderer.EDIT, editPersonHandler);
+        peopleList.addEventListener(SwipeListItemRenderer.DELETE, deletePersonHandler);
         addChild(peopleList);
 
         peopleCollection.loadPeople(billsCollection.currentBill.id);
@@ -81,8 +87,23 @@ public class BillSplitView extends PanelScreen{
         dispatchEventWith(ADDPERSONVIEW, false);
     }
 
+    private function editPersonHandler(e:Event):void {
+        peopleCollection.currentPerson = peopleList.selectedItem as PersonVO;
+        dispatchEventWith(Application.ADDPERSONVIEW, false);
+    }
+
+    private function deletePersonHandler(e:Event):void {
+        // selectedItem = null
+        peopleCollection.currentPerson = peopleList.selectedItem as PersonVO;
+        peopleCollection.deleteCurrentPerson(peopleCollection.currentPerson.id, billsCollection.currentBill.id);
+        display();
+        splitBill();
+    }
+
+
     private function peopleListChangeHandler(e:Event):void {
-        trace(peopleList.selectedItem as PersonVO); //TODO
+        // komt niet in deze functie
+        //trace("[BillSplitView]: selected item: " + peopleList.selectedItem as PersonVO); //TODO
     }
 
     private function saveButtonTriggeredHandler(e:Event):void {
@@ -103,43 +124,57 @@ public class BillSplitView extends PanelScreen{
 
         billTotal = billsCollection.currentBill.total;
         totalTxt = new Label();
+        totalTxt.text = "Total: " + billTotal + " euro";
+        restTxt = new Label();
+            if(billsCollection.currentBill.billType == "shared"){
+                restTxt.text = "Shared price: " + rest + " euro";
+            }else {
+                restTxt.text = "Rest: " + rest + " euro";
+            }
         trace("[BillSplitView] rest: " + rest);
-        totalTxt.text = "Total: " + billTotal + " / Rest: " + rest;
+
         container.addChild(totalTxt);
+        container.addChild(restTxt);
 
         return container;
     }
 
     private function pushPeople():void {
         arrPeople = [];
+        arrPrices = [];
+        peopleCollection.loadPeople(billsCollection.currentBill.id);
 
+        for each( var person:PersonVO in peopleCollection.people ){
+            arrPeople.push(person);
+            arrPrices.push(person.total);
+        }
+
+        trace("[BillSplitView]: " + arrPeople);
     }
 
     private function  splitBill():void {
-        // arr with all people
-        var arrPeople:Array = ["name 1", "name 2", "name 3"];
-        // arr with all people.amount
-        var arrPrices:Array = [2, 3, 5, 6, 4];
-        // arr with all people.amount (percent)
-        var arrPercentages:Array = [30,20,40];
 
-        var billtype:String = "shared";
+        pushPeople();
 
-        switch(billtype){
+        trace(billsCollection.currentBill.billType);
+
+        switch(billsCollection.currentBill.billType){
 
             case "shared":
-                rest = SplitService.shared(billTotal,arrPeople);
+                rest = SplitService.shared(billsCollection.currentBill.total,arrPeople);
                 break;
             case "ownprice":
-                rest = SplitService.shared(billTotal, arrPrices);
+                rest = SplitService.ownPrice(billsCollection.currentBill.total, arrPrices);
                 break;
             case "percentage":
-                rest = SplitService.percentage(billTotal, arrPercentages);
+                rest = SplitService.percentage(billsCollection.currentBill.total, arrPrices);
                 break;
             default:
-                rest = SplitService.shared(billTotal,arrPeople);
+                rest = SplitService.shared(billsCollection.currentBill.total,arrPeople);
                 break;
         }
+
+        trace("split: rest: " + rest);
     }
 
 

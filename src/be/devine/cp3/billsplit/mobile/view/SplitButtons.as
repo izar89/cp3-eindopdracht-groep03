@@ -8,6 +8,7 @@ import feathers.layout.HorizontalLayout;
 
 import flash.display.BitmapData;
 import flash.events.Event;
+import flash.utils.ByteArray;
 
 import starling.display.Image;
 import starling.display.Sprite;
@@ -18,11 +19,10 @@ import starling.textures.TextureAtlas;
 
 public class SplitButtons extends Sprite {
 
-    [Embed(source="/../assets/images/custom/custom.png")]
-    protected static const ATLAS_IMAGE:Class;
-
     [Embed(source="/../assets/images/custom/custom.xml", mimeType="application/octet-stream")]
-    protected static const ATLAS_XML:Class;
+    public static const AtlasXml:Class;
+    [Embed(source="/../assets/images/custom/custom.atf", mimeType="application/octet-stream")]
+    public static const AtfAsset:Class;
 
 
     private var billsCollection:BillsCollection;
@@ -64,8 +64,11 @@ public class SplitButtons extends Sprite {
 
     /* Functions */
     private function init():void{
-        const atlasBitmapData:BitmapData = (new ATLAS_IMAGE()).bitmapData;
-        textureAtlas = new TextureAtlas(Texture.fromBitmapData(atlasBitmapData, false), XML(new ATLAS_XML()));
+
+        var texture:Texture = Texture.fromAtfData(new AtfAsset() as ByteArray);
+        var xml:XML = XML(new AtlasXml());
+        textureAtlas = new TextureAtlas(texture, xml);
+
 
         buttonGroup = new LayoutGroup();
         addChild(buttonGroup);
