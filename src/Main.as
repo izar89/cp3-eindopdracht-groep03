@@ -25,7 +25,7 @@ public class Main extends Sprite {
     }
 
     private function stageResizeHandler(e:flash.events.Event):void {
-        stage.setAspectRatio(StageAspectRatio.PORTRAIT);
+        //stage.setAspectRatio(StageAspectRatio.PORTRAIT);
         _starling.viewPort = new Rectangle(0, 0, stage.stageWidth, stage.stageHeight);
         _starling.stage.stageWidth = stage.stageWidth;
         _starling.stage.stageHeight = stage.stageHeight;

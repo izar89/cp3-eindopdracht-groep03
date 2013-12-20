@@ -1,16 +1,10 @@
 package feathers.themes.controls {
 
-import be.devine.cp3.billsplit.model.BillsCollection;
-
 import feathers.controls.Label;
 import feathers.controls.ScrollContainer;
 import feathers.controls.renderers.LayoutGroupListItemRenderer;
 import feathers.events.FeathersEventType;
-import feathers.layout.AnchorLayout;
-import feathers.layout.AnchorLayoutData;
-
 import flash.utils.ByteArray;
-
 import starling.animation.Transitions;
 import starling.animation.Tween;
 import starling.core.Starling;
@@ -64,7 +58,11 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
             var currentTarget:DisplayObject = e.currentTarget as DisplayObject;
             switch(touch.phase){
                 case TouchPhase.MOVED:
-                    currentTarget.x += (touch.globalX - touch.previousGlobalX);
+
+                    if(currentTarget.x > -80 && currentTarget.x < 80 ){
+                        currentTarget.x += (touch.globalX - touch.previousGlobalX);
+                    }
+
                     if(currentTarget.x > 0){
                         editIcon.alpha = (currentTarget.x / 75);
                         if(currentTarget.x >= 75){
@@ -85,14 +83,14 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
                     break;
                 case TouchPhase.ENDED:
 
-                    isSelected = true;
+                    this.isSelected = true;
+                    trace(isSelected);
 
                     var containerTween:Tween = new Tween(currentTarget,.7, Transitions.EASE_OUT);
 
                     if(currentTarget.x >= 75){ // EDIT
 
                         var editTween:Tween = new Tween(editIcon,.7, Transitions.EASE_OUT);
-                        trace("1: " + isSelected);
                         editTween.onComplete = editTweenOnCompleteHandler;
                         containerTween.animate("x", 480);
                         editTween.animate("alpha", 0);
@@ -200,7 +198,6 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
 
     private function editTweenOnCompleteHandler():void{
         dispatchEventWith(EDIT, true);
-        trace("2: " + isSelected);
     }
 
     private function deleteTweenOnCompleteHandler():void{

@@ -3,7 +3,7 @@ package be.devine.cp3.billsplit {
 import be.devine.cp3.billsplit.mobile.view.BillView;
 import be.devine.cp3.billsplit.mobile.view.BillSplitView;
 import be.devine.cp3.billsplit.mobile.view.BillsView;
-import be.devine.cp3.billsplit.mobile.view.PeopleView;
+import be.devine.cp3.billsplit.mobile.view.PersonView;
 
 import feathers.controls.ScreenNavigator;
 import feathers.controls.ScreenNavigatorItem;
@@ -15,7 +15,7 @@ public class Application extends ScreenNavigator{
     public static const BILLSVIEW:String = "billsView";
     public static const BILLVIEW:String = "billView";
     public static const BILLSPLITVIEW:String = "billSplitView";
-    public static const ADDPERSONVIEW:String = "addPersonView";
+    public static const PERSONVIEW:String = "personView";
 
     private var transitionManager:ScreenSlidingStackTransitionManager;
 
@@ -32,9 +32,9 @@ public class Application extends ScreenNavigator{
         }));
         addScreen(BILLSPLITVIEW, new ScreenNavigatorItem(BillSplitView, {
             billsView: BILLSVIEW,
-            addPersonView: ADDPERSONVIEW
+            personView: PERSONVIEW
         }));
-        addScreen(ADDPERSONVIEW, new ScreenNavigatorItem(PeopleView, {
+        addScreen(PERSONVIEW, new ScreenNavigatorItem(PersonView, {
             billSplitView: BILLSPLITVIEW
         }));
 

@@ -22,8 +22,6 @@ import starling.events.Event;
 
 public class BillSplitView extends PanelScreen{
 
-    public static const ADDPERSONVIEW:String = "addPersonView";
-
     private var peopleCollection:PeopleCollection;
     private var billsCollection:BillsCollection;
 
@@ -42,6 +40,54 @@ public class BillSplitView extends PanelScreen{
         peopleCollection = PeopleCollection.getInstance();
         billsCollection = BillsCollection.getInstance();
 
+        init();
+
+        peopleCollection.loadPeople(billsCollection.currentBill.id);
+        addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+
+        display();
+    }
+
+    /* Starling events */
+    private function addedToStageHandler(e:Event):void {
+        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+        stage.addEventListener(Event.RESIZE, resizeHandler);
+        resize();
+    }
+
+    private function resizeHandler(e:Event):void {
+        resize();
+    }
+
+    private function addPersonBtnTriggeredHandler(e:Event):void {
+        peopleCollection.currentPerson = null;
+        dispatchEventWith(Application.PERSONVIEW, false);
+    }
+
+    private function editPersonHandler(e:Event):void {
+        peopleCollection.currentPerson = peopleList.selectedItem as PersonVO;
+        dispatchEventWith(Application.PERSONVIEW, false);
+    }
+
+    private function deletePersonHandler(e:Event):void {
+        // selectedItem = null
+        peopleCollection.currentPerson = peopleList.selectedItem as PersonVO;
+        peopleCollection.deleteCurrentPerson(peopleCollection.currentPerson.id, billsCollection.currentBill.id);
+        display();
+        splitBill();
+    }
+
+    private function peopleListChangeHandler(e:Event):void {
+        // komt niet in deze functie
+        //trace("[BillSplitView]: selected item: " + peopleList.selectedItem as PersonVO); //TODO
+    }
+
+    private function saveButtonTriggeredHandler(e:Event):void {
+        dispatchEventWith(Application.BILLSVIEW);
+    }
+
+    /* Functions */
+    private function init():void{
         /* Header */
         headerProperties.title = billsCollection.currentBill.name;
 
@@ -65,52 +111,8 @@ public class BillSplitView extends PanelScreen{
         peopleList.addEventListener(SwipeListItemRenderer.EDIT, editPersonHandler);
         peopleList.addEventListener(SwipeListItemRenderer.DELETE, deletePersonHandler);
         addChild(peopleList);
-
-        peopleCollection.loadPeople(billsCollection.currentBill.id);
-        addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-
-        display();
     }
 
-    /* Starling events */
-    private function addedToStageHandler(e:Event):void {
-        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-        stage.addEventListener(Event.RESIZE, resizeHandler);
-        resize();
-    }
-
-    private function resizeHandler(e:Event):void {
-        resize();
-    }
-
-    private function addPersonBtnTriggeredHandler(e:Event):void {
-        dispatchEventWith(ADDPERSONVIEW, false);
-    }
-
-    private function editPersonHandler(e:Event):void {
-        peopleCollection.currentPerson = peopleList.selectedItem as PersonVO;
-        dispatchEventWith(Application.ADDPERSONVIEW, false);
-    }
-
-    private function deletePersonHandler(e:Event):void {
-        // selectedItem = null
-        peopleCollection.currentPerson = peopleList.selectedItem as PersonVO;
-        peopleCollection.deleteCurrentPerson(peopleCollection.currentPerson.id, billsCollection.currentBill.id);
-        display();
-        splitBill();
-    }
-
-
-    private function peopleListChangeHandler(e:Event):void {
-        // komt niet in deze functie
-        //trace("[BillSplitView]: selected item: " + peopleList.selectedItem as PersonVO); //TODO
-    }
-
-    private function saveButtonTriggeredHandler(e:Event):void {
-        dispatchEventWith(Application.BILLSVIEW);
-    }
-
-    /* Functions */
     private function customFooterFactory():ScrollContainer{
         var container:ScrollContainer = new ScrollContainer();
         container.nameList.add( ScrollContainer.ALTERNATE_NAME_TOOLBAR );

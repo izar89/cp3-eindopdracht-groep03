@@ -14,7 +14,7 @@ import flash.events.Event;
 import starling.display.DisplayObject;
 import starling.events.Event;
 
-public class PeopleView extends PanelScreen {
+public class PersonView extends PanelScreen {
 
     private var peopleCollection:PeopleCollection;
     private var billsCollection:BillsCollection;
@@ -28,7 +28,7 @@ public class PeopleView extends PanelScreen {
     private var txtPrice:TextInput;
     private var addBtn:Button;
 
-    public function PeopleView() {
+    public function PersonView() {
         peopleCollection = PeopleCollection.getInstance();
         billsCollection = BillsCollection.getInstance();
 

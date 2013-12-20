@@ -20,16 +20,21 @@ public class BillsService extends EventDispatcher{
     }
 
     /* Functions */
-    public function load():void{
-        var bills:Vector.<BillModel> = new Vector.<BillModel>();
-
+    private function readAndParseJson():Object{
         if(file.exists){
             fileStream.open(file, FileMode.READ);
             var fileContents:String = fileStream.readMultiByte(fileStream.bytesAvailable, 'utf-8');
             fileStream.close();
+            return JSON.parse(fileContents);
+        }
+        return null;
+    }
 
-            var jsonObject:Object = JSON.parse(fileContents);
+    public function load():void{
+        var bills:Vector.<BillModel> = new Vector.<BillModel>();
+        var jsonObject:Object = readAndParseJson();
 
+        if(jsonObject){
             for each(var bill:Object in jsonObject){
                 bills.push(BillModelFactory.createBillModelFromObject(bill));
             }
