@@ -56,6 +56,10 @@ public class PeopleService extends EventDispatcher{
         }
     }
 
+    public function deletePersonsByBillId(billId:String):void{
+        write(billId);
+    }
+
     public function deletePerson(personID:String, billID:String):void{
         load(billID);
         deletePersonById(personID);

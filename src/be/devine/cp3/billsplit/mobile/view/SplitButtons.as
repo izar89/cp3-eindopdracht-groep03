@@ -69,7 +69,6 @@ public class SplitButtons extends Sprite {
         var xml:XML = XML(new AtlasXml());
         textureAtlas = new TextureAtlas(texture, xml);
 
-
         buttonGroup = new LayoutGroup();
         addChild(buttonGroup);
 
@@ -116,10 +115,6 @@ public class SplitButtons extends Sprite {
                 percentBtn.defaultIcon = new Image(textureAtlas.getTexture("percentage_active"));
                 break;
         }
-    }
-
-    public function setSize():void{ //TODO
-
     }
 }
 }

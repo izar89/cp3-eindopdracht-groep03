@@ -100,7 +100,6 @@ public class PeopleCollection extends EventDispatcher{
 
         // delete bill from json
         peopleService.deletePerson(personID, billId);
-
     }
 }
 }

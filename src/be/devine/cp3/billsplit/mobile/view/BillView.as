@@ -24,11 +24,19 @@ public class BillView extends PanelScreen{
     private var txtTotal:TextInput;
     private var submitBtn:Button;
 
+    private var headerTitle:String;
+    private var submitBtnLabel:String;
+
     public function BillView() {
         billsCollection = BillsCollection.getInstance();
 
+        headerTitle = "Edit Bill";
+        submitBtnLabel = 'Edit bill';
+
         if(!billsCollection.currentBill){
             billsCollection.currentBill = createNewBillModel();
+            headerTitle = "Add Bill";
+            submitBtnLabel = 'Add bill';
         }
 
         init();
@@ -56,7 +64,7 @@ public class BillView extends PanelScreen{
 
     private function submitBtnTriggeredHandler(e:starling.events.Event):void {
 
-        if(txtName.text.length > 0 && txtTotal.text.length){
+        if(txtName.text.length > 0 && txtTotal.text.length > 0){
             billsCollection.currentBill.name = txtName.text;
             billsCollection.currentBill.total = Number(txtTotal.text);
             billsCollection.writeBill();
@@ -75,7 +83,7 @@ public class BillView extends PanelScreen{
     /* Functions */
     private function init():void{
         /* Header */
-        headerProperties.title = 'Add Bill';
+        headerProperties.title = headerTitle;
 
         /* Footer */
         footerFactory = customFooterFactory;
@@ -121,7 +129,7 @@ public class BillView extends PanelScreen{
 
         // Button
         submitBtn = new Button();
-        submitBtn.label = 'Add bill';
+        submitBtn.label = submitBtnLabel;
         submitBtn.addEventListener(starling.events.Event.TRIGGERED, submitBtnTriggeredHandler);
         submitBtn.width = 100;
         container.addChild(submitBtn);

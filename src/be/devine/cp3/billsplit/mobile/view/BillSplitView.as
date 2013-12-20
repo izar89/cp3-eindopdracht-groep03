@@ -17,6 +17,8 @@ import feathers.controls.renderers.IListItemRenderer;
 import feathers.data.ListCollection;
 import feathers.themes.controls.SwipeListItemRenderer;
 
+import flash.events.Event;
+
 import starling.display.DisplayObject;
 import starling.events.Event;
 
@@ -43,33 +45,34 @@ public class BillSplitView extends PanelScreen{
         init();
 
         peopleCollection.loadPeople(billsCollection.currentBill.id);
-        addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
+        peopleCollection.addEventListener(PeopleCollection.PEOPLE_CHANGED_EVENT, peopleChangedHandler);
+        addEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
 
         display();
     }
 
     /* Starling events */
-    private function addedToStageHandler(e:Event):void {
-        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-        stage.addEventListener(Event.RESIZE, resizeHandler);
+    private function addedToStageHandler(e:starling.events.Event):void {
+        removeEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
+        stage.addEventListener(starling.events.Event.RESIZE, resizeHandler);
         resize();
     }
 
-    private function resizeHandler(e:Event):void {
+    private function resizeHandler(e:starling.events.Event):void {
         resize();
     }
 
-    private function addPersonBtnTriggeredHandler(e:Event):void {
+    private function addPersonBtnTriggeredHandler(e:starling.events.Event):void {
         peopleCollection.currentPerson = null;
         dispatchEventWith(Application.PERSONVIEW, false);
     }
 
-    private function editPersonHandler(e:Event):void {
+    private function editPersonHandler(e:starling.events.Event):void {
         peopleCollection.currentPerson = peopleList.selectedItem as PersonVO;
         dispatchEventWith(Application.PERSONVIEW, false);
     }
 
-    private function deletePersonHandler(e:Event):void {
+    private function deletePersonHandler(e:starling.events.Event):void {
         // selectedItem = null
         peopleCollection.currentPerson = peopleList.selectedItem as PersonVO;
         peopleCollection.deleteCurrentPerson(peopleCollection.currentPerson.id, billsCollection.currentBill.id);
@@ -77,12 +80,7 @@ public class BillSplitView extends PanelScreen{
         splitBill();
     }
 
-    private function peopleListChangeHandler(e:Event):void {
-        // komt niet in deze functie
-        //trace("[BillSplitView]: selected item: " + peopleList.selectedItem as PersonVO); //TODO
-    }
-
-    private function saveButtonTriggeredHandler(e:Event):void {
+    private function saveButtonTriggeredHandler(e:starling.events.Event):void {
         dispatchEventWith(Application.BILLSVIEW);
     }
 
@@ -95,7 +93,7 @@ public class BillSplitView extends PanelScreen{
 
         saveBtn = new Button();
         saveBtn.label = 'Save';
-        saveBtn.addEventListener(Event.TRIGGERED, saveButtonTriggeredHandler);
+        saveBtn.addEventListener(starling.events.Event.TRIGGERED, saveButtonTriggeredHandler);
         headerProperties.rightItems = new <DisplayObject>[saveBtn];
 
         /* Footer */
@@ -107,7 +105,6 @@ public class BillSplitView extends PanelScreen{
             var renderer:SwipeListItemRenderer = new SwipeListItemRenderer();
             return renderer;
         };
-        peopleList.addEventListener(Event.CHANGE, peopleListChangeHandler);
         peopleList.addEventListener(SwipeListItemRenderer.EDIT, editPersonHandler);
         peopleList.addEventListener(SwipeListItemRenderer.DELETE, deletePersonHandler);
         addChild(peopleList);
@@ -121,7 +118,7 @@ public class BillSplitView extends PanelScreen{
 
         addPersonBtn = new Button;
         addPersonBtn.label = "Add Person";
-        addPersonBtn.addEventListener(Event.TRIGGERED, addPersonBtnTriggeredHandler);
+        addPersonBtn.addEventListener(starling.events.Event.TRIGGERED, addPersonBtnTriggeredHandler);
         container.addChild(addPersonBtn);
 
         billTotal = billsCollection.currentBill.total;
@@ -188,4 +185,8 @@ public class BillSplitView extends PanelScreen{
         peopleList.setSize(stage.stageWidth, stage.stageHeight);
     }
 
+    private function peopleChangedHandler(e:flash.events.Event):void {
+        display();
+
+    }
 }}

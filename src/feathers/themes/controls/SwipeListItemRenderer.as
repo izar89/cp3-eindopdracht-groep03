@@ -59,9 +59,8 @@ public class SwipeListItemRenderer extends LayoutGroupListItemRenderer{
             switch(touch.phase){
                 case TouchPhase.MOVED:
 
-                    if(currentTarget.x > -80 && currentTarget.x < 80 ){
-                        currentTarget.x += (touch.globalX - touch.previousGlobalX);
-                    }
+
+                    currentTarget.x += (touch.globalX - touch.previousGlobalX);
 
                     if(currentTarget.x > 0){
                         editIcon.alpha = (currentTarget.x / 75);

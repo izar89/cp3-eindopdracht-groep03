@@ -93,10 +93,11 @@ public class BillsCollection extends EventDispatcher{
         // delete from list
         bills.splice(i, 1);
 
+        // delete people from bill
+        peopleService.deletePersonsByBillId(currentBill.id);
+
         // delete bill from json
         billService.deleteBill(currentBill);
-
-        //TODO: delete people from bill
     }
 }
 }

@@ -11,7 +11,7 @@ import feathers.controls.ScrollContainer;
 import feathers.controls.renderers.IListItemRenderer;
 import feathers.data.ListCollection;
 import feathers.themes.controls.SwipeListItemRenderer;
-
+import flash.events.Event;
 import starling.events.Event;
 
 public class BillsView extends PanelScreen{
@@ -40,42 +40,44 @@ public class BillsView extends PanelScreen{
         billsList.addEventListener(SwipeListItemRenderer.DELETE, deleteBillHandler);
         addChild(billsList);
 
+        billsCollection.addEventListener(BillsCollection.BILLS_CHANGED_EVENT, billsChangedEventHandler);
         billsCollection.loadBills();
-        addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-
-        display();
+        addEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
     }
 
     /* Starling events */
-    private function addedToStageHandler(e:Event):void {
-        removeEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
-        stage.addEventListener(Event.RESIZE, resizeHandler);
+    private function addedToStageHandler(e:starling.events.Event):void {
+        removeEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
+        stage.addEventListener(starling.events.Event.RESIZE, resizeHandler);
         resize();
     }
 
-    private function resizeHandler(e:Event):void {
+    private function resizeHandler(e:starling.events.Event):void {
         resize();
     }
 
-    private function addBillBtnTriggeredHandler(e:Event):void {
+    private function billsChangedEventHandler(e:flash.events.Event):void {
+        display();
+    }
+
+    private function addBillBtnTriggeredHandler(e:starling.events.Event):void {
         billsCollection.currentBill = null;
         dispatchEventWith(Application.BILLVIEW, false);
     }
 
-    private function selectBillHandler(e:Event):void {
+    private function selectBillHandler(e:starling.events.Event):void {
         billsCollection.currentBill = billsList.selectedItem as BillModel;
         dispatchEventWith(Application.BILLSPLITVIEW, false);
     }
 
-    private function editBillHandler(e:Event):void {
+    private function editBillHandler(e:starling.events.Event):void {
         billsCollection.currentBill = billsList.selectedItem as BillModel;
         dispatchEventWith(Application.BILLVIEW, false);
     }
 
-    private function deleteBillHandler(e:Event):void {
+    private function deleteBillHandler(e:starling.events.Event):void {
         billsCollection.currentBill = billsList.selectedItem as BillModel;
         billsCollection.deleteCurrentBill();
-        display();
     }
 
     /* Functions */
@@ -87,7 +89,7 @@ public class BillsView extends PanelScreen{
 
         addBillBtn = new Button;
         addBillBtn.label = "Add Bill";
-        addBillBtn.addEventListener(Event.TRIGGERED, addBillBtnTriggeredHandler);
+        addBillBtn.addEventListener(starling.events.Event.TRIGGERED, addBillBtnTriggeredHandler);
         container.addChild(addBillBtn);
 
         return container;

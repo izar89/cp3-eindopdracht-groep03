@@ -10,6 +10,7 @@ import feathers.controls.PanelScreen;
 import feathers.controls.TextInput;
 
 import flash.events.Event;
+import flash.globalization.DateTimeFormatter;
 
 import starling.display.DisplayObject;
 import starling.events.Event;
@@ -26,18 +27,39 @@ public class PersonView extends PanelScreen {
 
     private var txtName:TextInput;
     private var txtPrice:TextInput;
-    private var addBtn:Button;
+    private var submitBtn:Button;
+
+    private var headerTitle:String;
+    private var submitBtnLabel:String;
 
     public function PersonView() {
         peopleCollection = PeopleCollection.getInstance();
         billsCollection = BillsCollection.getInstance();
 
+        headerTitle = "Edit Person";
+        submitBtnLabel = 'Edit person';
+
+        if(!peopleCollection.currentPerson){
+            peopleCollection.currentPerson = createNewPersonVO();
+            headerTitle = "Add Person";
+            submitBtnLabel = 'Add person';
+        }
+
         init();
 
-        billsCollection.addEventListener(PeopleCollection.CURRENTPERSON_CHANGED_EVENT, currentPersonChangedHandler);
+        peopleCollection.addEventListener(PeopleCollection.CURRENTPERSON_CHANGED_EVENT, currentPersonChangedHandler);
         currentPersonChangedHandler();
 
         addEventListener(starling.events.Event.ADDED_TO_STAGE, addedToStageHandler);
+    }
+
+    private function createNewPersonVO():PersonVO{
+        var newPerson:PersonVO = new PersonVO();
+        newPerson.billId = billsCollection.currentBill.id;
+        newPerson.id = new Date().toString();
+        newPerson.name = "Person " + (peopleCollection.people.length + 1);
+        newPerson.total = 0;
+        return newPerson;
     }
 
     /* Events */
@@ -62,30 +84,13 @@ public class PersonView extends PanelScreen {
         }
     }
 
-    private function addPersonTriggeredHandler(e:starling.events.Event):void {
+    private function submitPersonTriggeredHandler(e:starling.events.Event):void {
 
-        if(txtName.text.length > 0){
-
-            if(peopleCollection.currentPerson){
-                peopleCollection.currentPerson.name = txtName.text;
-                peopleCollection.currentPerson.total = Number(txtPrice.text);
-
-                peopleCollection.writePeople(billsCollection.currentBill.id);
-
-            }else {
-                var newPerson:PersonVO = new PersonVO();
-                var date:Date = new Date();
-                newPerson.id = date.toString();
-                newPerson.name = txtName.text;
-                newPerson.billId = billsCollection.currentBill.id;
-                if(txtPrice.text.length == 0 ){
-                    newPerson.total = parseFloat("0");
-                }else {
-                    newPerson.total = parseFloat(txtPrice.text);
-                }
-                peopleCollection.addPerson(newPerson);
-                peopleCollection.writePeople(billsCollection.currentBill.id);
-            }
+        if(txtName.text.length > 0 && txtPrice.text.length > 0){
+            peopleCollection.currentPerson.name = txtName.text;
+            peopleCollection.currentPerson.total = Number(txtPrice.text);
+            peopleCollection.addPerson(peopleCollection.currentPerson);
+            peopleCollection.writePeople(billsCollection.currentBill.id);
 
             dispatchEventWith(Application.BILLSPLITVIEW);
         }
@@ -131,15 +136,14 @@ public class PersonView extends PanelScreen {
         }
 
         // Button
-        addBtn = new Button();
-        addBtn.label = 'Add Person';
-        addBtn.addEventListener(starling.events.Event.TRIGGERED, addPersonTriggeredHandler);
-        addChild(addBtn);
+        submitBtn = new Button();
+        submitBtn.label = 'Add Person';
+        submitBtn.addEventListener(starling.events.Event.TRIGGERED, submitPersonTriggeredHandler);
+        addChild(submitBtn);
     }
 
     private function priceInput():void {
         addChild(txtPriceLabel);
-
         txtPrice = new TextInput();
         txtPrice.maxChars = 16;
         txtPrice.restrict = "0-9\\,";
@@ -149,7 +153,7 @@ public class PersonView extends PanelScreen {
     private function resize():void{
         txtName.setSize(stage.stageWidth, txtName.minHeight);
         txtPrice.setSize(stage.stageWidth, txtPrice.minHeight);
-        addBtn.setSize(stage.stageWidth, addBtn.minHeight);
+        submitBtn.setSize(stage.stageWidth, submitBtn.minHeight);
         txtNameLabel.y = 10;
         txtNameLabel.x = 20;
         txtName.y = txtNameLabel.y + 30;
@@ -157,12 +161,12 @@ public class PersonView extends PanelScreen {
         txtPriceLabel.x = 20;
         txtPrice.y = txtPriceLabel.y + 30;
         if(billsCollection.currentBill.billType == "shared"){
-            addBtn.y = txtName.height + txtName.y + 50;
+            submitBtn.y = txtName.height + txtName.y + 50;
         } else {
-            addBtn.y = txtPrice.height + txtPrice.y + 50;
+            submitBtn.y = txtPrice.height + txtPrice.y + 50;
         }
-        addBtn.width = 400;
-        addBtn.x = (stage.stageWidth - addBtn.width) / 2;
+        submitBtn.width = 400;
+        submitBtn.x = (stage.stageWidth - submitBtn.width) / 2;
     }
 }
 }
